@@ -10,14 +10,17 @@ import Foundation
 
 protocol ChatRoomViewModelType {
     var user: User? { get set }
-    var service: ChattingService? { get set }
+    var service: ChattingServiceProtocol? { get set }
+    var messages: [Message] { get set }
 }
 
 class ChatRoomViewModel: ChatRoomViewModelType {
     
     var router: RouterProtocol?
-    var service: ChattingService?
-    
+    var service: ChattingServiceProtocol?
+    var messages = [Message]()
     var user: User?
+    
+    
     
 }

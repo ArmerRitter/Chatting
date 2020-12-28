@@ -10,43 +10,14 @@ import Foundation
 import RxSwift
 import Starscream
 
+protocol ChattingServiceProtocol {
+    func connect(user: User)
+    func send(_ message: Message, completion: @escaping (RequestResult<Bool>) -> Void)
+    func getAllUsers(completion: @escaping (RequestResult<[User]>) -> Void)
+}
 
-class ChattingService {
-  /*  func getAllUsersAPI() -> Observable<[User]> {
-        return Observable<[User]>.create { observer in
-           
-            let path = "http://localhost:8080/api/users"
-            guard let url = URL(string: path) else {
-              fatalError()
-            }
-           
-            let getAllRequest = URLRequest(url: url)
-            
-            let dataTask = URLSession.shared.dataTask(with: getAllRequest) { data, response, _ in
-                
-               guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
-                    return
-               }
-                
-               do {
-                    let users = try JSONDecoder().decode([User].self, from: jsonData)
-                    users.forEach { print($0.username) }
-                    observer.onNext(users)
-               } catch let error {
-                    observer.onError(error)
-                    print("error")
-               }
-                observer.onCompleted()
-            }
-            dataTask.resume()
-            
-            return Disposables.create {
-               // dataTask.cancel()
-            }
-        }
-    } */
+class ChattingService: ChattingServiceProtocol {
   
-    
     private var request: URLRequest
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
@@ -56,8 +27,6 @@ class ChattingService {
     
     init() {
         self.request = URLRequest(url: URL(string: "ws://localhost:8080/chat")!)
-      
-      //  self.connect()
     }
     
     func connect(user: User) {
@@ -198,3 +167,36 @@ extension ChattingService: WebSocketDelegate {
     
 }
 
+/*  func getAllUsersAPI() -> Observable<[User]> {
+    return Observable<[User]>.create { observer in
+       
+        let path = "http://localhost:8080/api/users"
+        guard let url = URL(string: path) else {
+          fatalError()
+        }
+       
+        let getAllRequest = URLRequest(url: url)
+        
+        let dataTask = URLSession.shared.dataTask(with: getAllRequest) { data, response, _ in
+            
+           guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
+                return
+           }
+            
+           do {
+                let users = try JSONDecoder().decode([User].self, from: jsonData)
+                users.forEach { print($0.username) }
+                observer.onNext(users)
+           } catch let error {
+                observer.onError(error)
+                print("error")
+           }
+            observer.onCompleted()
+        }
+        dataTask.resume()
+        
+        return Disposables.create {
+           // dataTask.cancel()
+        }
+    }
+} */

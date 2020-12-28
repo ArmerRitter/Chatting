@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                let win = UIWindow(windowScene: winScene)
               
               let navigationController = UINavigationController()
+        
               let moduleBuilder = ModuleBuilder()
               let router = Router(navigationController: navigationController, moduleBuilder: moduleBuilder)
                

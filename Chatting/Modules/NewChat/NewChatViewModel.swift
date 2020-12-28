@@ -12,7 +12,7 @@ import RxRelay
 
 protocol NewChatViewModelType {
     var router: RouterProtocol? { get }
-    var service: ChattingService { get set }
+    var service: ChattingServiceProtocol { get set }
     var users: BehaviorRelay<[User]> { get }
     var bag: DisposeBag { get }
     func numberOfCount() -> Int
@@ -22,7 +22,7 @@ protocol NewChatViewModelType {
 class NewChatViewModel: NewChatViewModelType {
     
     var router: RouterProtocol?
-    var service: ChattingService
+    var service: ChattingServiceProtocol
     var users = BehaviorRelay<[User]>(value: [])
     var bag = DisposeBag()
     
@@ -46,7 +46,7 @@ class NewChatViewModel: NewChatViewModelType {
         }
     }
     
-    init(service: ChattingService) {
+    init(service: ChattingServiceProtocol) {
         self.service = service
         getAllUsers()
     }

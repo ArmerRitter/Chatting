@@ -38,7 +38,7 @@ class ModuleBuilder {
         return view
     }
     
-    func createNewChatModule(router: RouterProtocol, service: ChattingService) -> UIViewController {
+    func createNewChatModule(router: RouterProtocol, service: ChattingServiceProtocol) -> UIViewController {
         let view = NewChatViewController()
         let viewModel = NewChatViewModel(service: service)
         
@@ -48,7 +48,7 @@ class ModuleBuilder {
         return view
     }
     
-    func createChatRoomModule(router: RouterProtocol, service: ChattingService) -> UIViewController {
+    func createChatRoomModule(router: RouterProtocol, service: ChattingServiceProtocol) -> UIViewController {
         let view = ChatRoomViewController()
         let viewModel = ChatRoomViewModel()
         

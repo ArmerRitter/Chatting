@@ -33,6 +33,8 @@
 		B08D9832258F96E400A608D0 /* NewChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9831258F96E400A608D0 /* NewChatViewModel.swift */; };
 		B08D9835258F972400A608D0 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9834258F972400A608D0 /* ChatRoomViewController.swift */; };
 		B08D9837258F973E00A608D0 /* ChatRoomViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9836258F973E00A608D0 /* ChatRoomViewModel.swift */; };
+		B09180DE2598C46A00A0BFE7 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09180DD2598C46A00A0BFE7 /* MessageCell.swift */; };
+		B09180E02598D57800A0BFE7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09180DF2598D57800A0BFE7 /* Extensions.swift */; };
 		FFD54CE649072CE109D263AE /* Pods_Chatting.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9A2A90D1C12BEC5A472DF05 /* Pods_Chatting.framework */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +70,8 @@
 		B08D9831258F96E400A608D0 /* NewChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewChatViewModel.swift; sourceTree = "<group>"; };
 		B08D9834258F972400A608D0 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
 		B08D9836258F973E00A608D0 /* ChatRoomViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomViewModel.swift; sourceTree = "<group>"; };
+		B09180DD2598C46A00A0BFE7 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		B09180DF2598D57800A0BFE7 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +121,7 @@
 				B08D980C258F917A00A608D0 /* Model */,
 				B08D9839258F979000A608D0 /* Modules */,
 				B08D981E258F957300A608D0 /* Servicies */,
+				B09180DF2598D57800A0BFE7 /* Extensions.swift */,
 				B08D97F8258F90FB00A608D0 /* Main.storyboard */,
 				B08D97FB258F90FC00A608D0 /* Assets.xcassets */,
 				B08D97FD258F90FC00A608D0 /* LaunchScreen.storyboard */,
@@ -189,6 +194,7 @@
 			children = (
 				B08D9834258F972400A608D0 /* ChatRoomViewController.swift */,
 				B08D9836258F973E00A608D0 /* ChatRoomViewModel.swift */,
+				B09180DD2598C46A00A0BFE7 /* MessageCell.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -347,8 +353,10 @@
 				B08D9837258F973E00A608D0 /* ChatRoomViewModel.swift in Sources */,
 				B08D980B258F916B00A608D0 /* Message.swift in Sources */,
 				B08D9807258F915300A608D0 /* User.swift in Sources */,
+				B09180DE2598C46A00A0BFE7 /* MessageCell.swift in Sources */,
 				B08D9832258F96E400A608D0 /* NewChatViewModel.swift in Sources */,
 				B08D9809258F915F00A608D0 /* Token.swift in Sources */,
+				B09180E02598D57800A0BFE7 /* Extensions.swift in Sources */,
 				B08D9810258F93A200A608D0 /* LoginViewModel.swift in Sources */,
 				B08D9817258F94F800A608D0 /* AuthenticationService.swift in Sources */,
 				B08D9830258F96C300A608D0 /* NewChatViewController.swift in Sources */,

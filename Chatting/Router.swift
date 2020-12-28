@@ -18,8 +18,8 @@ protocol RouterProtocol {
     func loginViewController()
     func chatListViewController(masterUser: User)
     func signupViewController()
-    func newChatViewController(service: ChattingService)
-    func chatRoomViewController(user: User, service: ChattingService)
+    func newChatViewController(service: ChattingServiceProtocol)
+    func chatRoomViewController(user: User, service: ChattingServiceProtocol)
     var navigationController: UINavigationController? { get }
 }
 
@@ -52,14 +52,14 @@ class Router: RouterProtocol {
         }
     }
     
-    func newChatViewController(service: ChattingService) {
+    func newChatViewController(service: ChattingServiceProtocol) {
         if let navigationController = navigationController {
             guard let newChatViewController = moduleBuilder?.createNewChatModule(router: self, service: service) else { return }
             navigationController.present(newChatViewController, animated: true)
         }
     }
     
-    func chatRoomViewController(user: User, service: ChattingService) {
+    func chatRoomViewController(user: User, service: ChattingServiceProtocol) {
         if let navigationController = navigationController {
             guard let chatViewController = moduleBuilder?.createChatRoomModule(router: self, service: service) as? ChatRoomViewController else { return }
             chatViewController.viewModel?.user = user
