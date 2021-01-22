@@ -21,14 +21,14 @@ class ChatRoomViewController: UIViewController {
         return table
     }()
     
-    var messageTextField: UITextField = {
-        let textfiled = UITextField()
+    var messageTextField: MessageTextField = {
+        let textfiled = MessageTextField()
         textfiled.translatesAutoresizingMaskIntoConstraints = false
         textfiled.layer.cornerRadius = 17
         textfiled.layer.masksToBounds = true
         textfiled.layer.borderColor = UIColor.lightGray.cgColor
         textfiled.layer.borderWidth = 1
-        textfiled.placeholder = "   Type message"
+        textfiled.placeholder = "Type message"
         textfiled.backgroundColor = .white
         return textfiled
     }()
@@ -40,6 +40,7 @@ class ChatRoomViewController: UIViewController {
         button.layer.masksToBounds = true
         button.backgroundColor = .systemBlue
         button.setTitle("Send", for: .normal)
+      //  button.isEnabled = false
         return button
     }()
     
@@ -55,8 +56,11 @@ class ChatRoomViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         messageTableView.reloadData()
-        let indexPath = IndexPath(row: mess.count - 1, section: 0)
+        
+        if viewModel!.messages.count > 0 {
+        let indexPath = IndexPath(row: (viewModel?.messages.count)! - 1, section: 0)
         messageTableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+        }
     }
     
     override func viewWillLayoutSubviews() {
@@ -64,30 +68,40 @@ class ChatRoomViewController: UIViewController {
        // sendMessageButton.roundCorner(corners: .bottomLeft, radius: 13)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+     //   tapOnBack()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-    //    guard let user = viewModel?.user else { return }
       
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        
+
         
         setupView()
         setupConstraints()
-       // adjustContentHeight(animated: false)
     }
     
     func setupView() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(tapOnBack))
+      //  navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Chats", style: .plain, target: self, action: #selector(tapOnBack))
        
-        title = viewModel?.user?.username
-        view.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        title = viewModel?.dialog?.user.username
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tapOnAdd))
         navigationController?.navigationBar.isTranslucent = false
+        
+        sendMessageButton.addTarget(self, action: #selector(tapOnSend), for: .touchUpInside)
+        
+      //  messageTableView.rowHeight = UITableView.automaticDimension
+      //  messageTableView.estimatedRowHeight = 1000
         
         messageTableView.tableFooterView = UIView()
         messageTableView.delegate = self
         messageTableView.dataSource = self
         messageTableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
-        messageTableView.separatorStyle = .none
+       // messageTableView.separatorStyle = .none
    
         messageTextField.delegate = self
         
@@ -96,7 +110,19 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleContentForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    
+    @objc func tapOnSend() {
+        
+        guard let text = messageTextField.text else { print("guard"); return }
+        
+        if !text.isEmptyOrWhitespase() {
+            viewModel?.send(text: text)
+            messageTableView.reloadData()
+            messageTextField.text = nil
+            messageTextField.resignFirstResponder()
+            adjustContentHeight(animated: false)
+            print("send")
+        }
+    }
     
     @objc func handleContentForKeyboard(_ notification: Notification) {
         
@@ -117,15 +143,17 @@ class ChatRoomViewController: UIViewController {
        let messagesContentHeight = view.frame.height - messageBarHeight
 
        let diferenceContent = messageTableView.contentSize.height - messagesContentHeight
-     print(diferenceContent)
+   //  print(diferenceContent)
        UIView.animate(withDuration: 0, delay: 0, options: .curveEaseOut, animations: {
            self.view.layoutIfNeeded()
        }) { (completed) in
            if diferenceContent > 0 {
                let height = diferenceContent
                self.messageTableView.setContentOffset(CGPoint(x: 0, y: height), animated: animated)
+            print("adjust")
            }
        }
+        messageTableView.reloadData()
     }
     
     override func viewDidLayoutSubviews() {
@@ -149,7 +177,7 @@ class ChatRoomViewController: UIViewController {
         messageTextField.leadingAnchor.constraint(equalTo: messageInputContainerView.leadingAnchor, constant: 15).isActive = true
         messageTextField.trailingAnchor.constraint(equalTo: sendMessageButton.leadingAnchor,constant: -10).isActive = true
         messageTextField.heightAnchor.constraint(equalToConstant: 34).isActive = true
-    
+        
         bottomConstraint = messageInputContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         messageInputContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         bottomConstraint?.isActive = true
@@ -162,34 +190,28 @@ class ChatRoomViewController: UIViewController {
     }
     
     @objc func tapOnAdd() {
-        guard let user = viewModel?.user else { return }
-        let mess = Message(sender: "Q7", reciever: user, text: "hallo 7")
-      //  service.disconnect()
-        
-     //   viewModel?.service?.send(mess) { result in
-            
-     //   }
-        
-     //   print( self.tableView.contentOffset.y)
+     
+        messageTableView.reloadData()
+      
     }
     
     @objc func tapOnBack() {
-        guard let chatListViewController = navigationController?.previosViewController as? ChatListViewController, let user = viewModel?.user else {
-            return
-        }
+//        guard let chatListViewController = navigationController?.previosViewController as? ChatListViewController, let user = viewModel?.user else {
+//            print("back")
+//            return
+//        }
         
-        chatListViewController.viewModel?.users.accept([user])
+      //  chatListViewController.viewModel?.users.accept([user])
         navigationController?.popViewController(animated: true)
     }
     
-    var mess = ["A collection of optional methods that you implement to make a search bar control functional","The mathematical constant pi","Above is the current function I use to determine the height but it is not working. I would greatly appreciate any help I can get. I would perfer the answer in Swift and not Objective C"]
-   
 }
 
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
       //  print(tableView.frame.height, view.frame.height)
+       
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -197,36 +219,53 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-      //  let opthions = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
-      //  let frame = NSString(string: mess).boundingRect(with: CGSize(width: 250, height: 1000), options: opthions, attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 17)], context: nil)
-       // print(view.frame.width)
-        
-        return mess[indexPath.row].messageBounds().height + 40
+        guard let text = viewModel?.dialog?.messages[indexPath.row].text else { return 0 }
+        return text.messageBounds().height + 40
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mess.count
+        return viewModel?.numberOfrows() ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = messageTableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageCell
-        cell.selectionStyle = .none
-        //cell.backgroundColor = .yellow
-        cell.messageTextView.roundCorner(corners: [.bottomLeft, .topLeft, .topRight], radius: 20)
+        let cell = messageTableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as? MessageCell
         
-        let frame = mess[indexPath.row].messageBounds()
+        guard let tableViewCell = cell, let dialog = viewModel?.dialog else { return UITableViewCell() }
+        tableViewCell.selectionStyle = .none
         
-        cell.messageTextView.frame = CGRect(x: view.frame.width - frame.width - 55, y: 10, width: frame.width + 40, height: frame.height + 20)
+        let message = dialog.messages[indexPath.row]
+        let frame = message.text.messageBounds()
         
-        cell.messageTextView.text = mess[indexPath.row]
+        if message.reciever.username == dialog.user.username {
+            
+            tableViewCell.messageTextView.roundCorner(corners: [.bottomLeft, .topLeft, .topRight], radius: 20)
+            tableViewCell.messageTextView.frame = CGRect(x: view.frame.width - frame.width - 55, y: 10, width: frame.width + 40, height: frame.height + 20)
+            
+        } else {
+            
+            tableViewCell.messageTextView.roundCorner(corners: [.bottomRight, .bottomLeft, .topRight], radius: 20)
+            tableViewCell.messageTextView.frame = CGRect(x: 15, y: 10, width: frame.width + 40, height: frame.height + 20)
+            tableViewCell.messageTextView.backgroundColor = .systemGreen
+        }
         
-        return cell
+        tableViewCell.messageTextView.text = message.text
+        
+        return tableViewCell
     }
     
 }
 
 extension ChatRoomViewController: UITextFieldDelegate {
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        messageTextField.resignFirstResponder()
+      //  adjustContentHeight(animated: false)
+        return true
+    }
     
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        
+    }
     
 }

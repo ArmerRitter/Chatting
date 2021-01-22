@@ -10,9 +10,9 @@ import Foundation
 
 
 final class User: Codable {
+    
     var id: UUID?
     var username: String
-    
 }
 
 final class CreateUser: Codable {

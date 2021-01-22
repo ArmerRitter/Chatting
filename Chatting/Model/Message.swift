@@ -28,9 +28,10 @@ struct HandShake: Codable {
 }
 
 struct Message: Codable {
-    var sender: String
+    var sender: User
     var reciever: User
     var text: String
+    var date: Date
 }
 
 extension MessageContent: Codable {

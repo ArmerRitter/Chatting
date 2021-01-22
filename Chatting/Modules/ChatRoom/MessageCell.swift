@@ -28,11 +28,13 @@ class MessageCell: UITableViewCell {
         
         self.addSubview(messageTextView)
         
-       // messageTextView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-      //  messageTextView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
-         //  messageTextView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -100).isActive = true
-     //   messageTextView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
+        let height = messageTextView.text.messageBounds().height
         
+//        messageTextView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
+//        messageTextView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
+//           messageTextView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -100).isActive = true
+//        messageTextView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10).isActive = true
+//        messageTextView.heightAnchor.constraint(equalToConstant: height + 20).isActive = true
     }
     
     required init?(coder: NSCoder) {

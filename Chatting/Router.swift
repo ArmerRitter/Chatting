@@ -19,7 +19,7 @@ protocol RouterProtocol {
     func chatListViewController(masterUser: User)
     func signupViewController()
     func newChatViewController(service: ChattingServiceProtocol)
-    func chatRoomViewController(user: User, service: ChattingServiceProtocol)
+    func chatRoomViewController(dialog: Dialog, service: ChattingServiceProtocol)
     var navigationController: UINavigationController? { get }
 }
 
@@ -59,12 +59,28 @@ class Router: RouterProtocol {
         }
     }
     
-    func chatRoomViewController(user: User, service: ChattingServiceProtocol) {
+    func chatRoomViewController(dialog: Dialog, service: ChattingServiceProtocol) {
         if let navigationController = navigationController {
-            guard let chatViewController = moduleBuilder?.createChatRoomModule(router: self, service: service) as? ChatRoomViewController else { return }
-            chatViewController.viewModel?.user = user
-            navigationController.pushViewController(chatViewController, animated: true)
+            guard let chatRoomViewController = moduleBuilder?.createChatRoomModule(router: self, service: service) as? ChatRoomViewController else { return }
+            
+//            if dialog.unreadMessages.value.count > 0 {
+//                dialog.messages =
+//            }
+            
+            chatRoomViewController.viewModel?.dialog = dialog
+            
+            navigationController.pushViewController(chatRoomViewController, animated: true)
+            
+            guard let vc = navigationController.viewControllers.first as? ChatListViewController else { return }
+            var dialogs = vc.viewModel!.dialogs.value
+         
+            if dialogs.filter { $0.user.username == dialog.user.username }.count == 0 {
+                dialogs.append(dialog)
+                vc.viewModel?.dialogs.accept(dialogs)
+            }
         }
+        
+        
     }
     
     func route(to routeID: Route) {

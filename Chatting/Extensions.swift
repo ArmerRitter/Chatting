@@ -17,7 +17,6 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
-    
 }
 
 extension String {
@@ -29,5 +28,9 @@ extension String {
         return CGSize(width: boundingBox.width, height: boundingBox.height)
     }
     
-
+    func isEmptyOrWhitespase() -> Bool {
+        self.trimmingCharacters(in: .whitespaces) == ""
+    }
 }
+
+

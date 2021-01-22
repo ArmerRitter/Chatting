@@ -8,9 +8,11 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 import Starscream
 
 protocol ChattingServiceProtocol {
+    var inputMessages: BehaviorRelay<[Message]> { get }
     func connect(user: User)
     func send(_ message: Message, completion: @escaping (RequestResult<Bool>) -> Void)
     func getAllUsers(completion: @escaping (RequestResult<[User]>) -> Void)
@@ -24,6 +26,7 @@ class ChattingService: ChattingServiceProtocol {
     var socket: WebSocket!
     var isConnected = false
     
+    var inputMessages = BehaviorRelay<[Message]>(value: [])
     
     init() {
         self.request = URLRequest(url: URL(string: "ws://localhost:8080/chat")!)
@@ -141,6 +144,7 @@ extension ChattingService: WebSocketDelegate {
                     print(hs)
                 case .message(let ms):
                     print(ms)
+                    inputMessages.accept([ms])
                 }
                 
             } catch(let error) {

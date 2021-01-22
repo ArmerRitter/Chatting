@@ -12,6 +12,9 @@ class ChatListViewController: UITableViewController {
 
     var viewModel: ChatListViewModelType?
     var users = [User]()
+    var dialogs = [Dialog]()
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -30,19 +33,40 @@ class ChatListViewController: UITableViewController {
 
         title = "Chats"
         
-        viewModel?.users.subscribe(onNext: { [unowned self] users in
-            self.users += users
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }).disposed(by: viewModel!.bag)
+//       viewModel?.dialogs.subscribe(onNext: { [unowned self] dialog in
+//           self.dialogs = dialog
+//           DispatchQueue.main.async {
+//               self.tableView.reloadData()
+//           }
+//        print("dialogSubVC")
+//       }).disposed(by: viewModel!.bag)
+        tableView.dataSource = nil
         
+        //let nib = UINib(nibName: "DialogTableViewCell", bundle: nil)
+        
+        tableView.register(DialogTableViewCell.self, forCellReuseIdentifier: "dialogCellidentifyer")
+        
+        viewModel?.dialogs.asObservable().bind(to: tableView.rx.items(cellIdentifier: "dialogCellidentifyer", cellType: DialogTableViewCell.self)) {
+            index, item, cell in
+            let viewModelCell = DialogTableViewCellViewModel(dialog: item)
+            cell.configure(viewModel: viewModelCell)
+//            item.unreadMessages.subscribe(onNext: { [unowned self] message in
+//                self.tableView.reloadData()
+//            }).disposed(by: viewModelCell.bag)
+        }.disposed(by: viewModel!.bag)
+        
+        
+        
+        
+        
+       // tableView.delegate = nil
         setupView()
     }
     
     func setupView() {
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
         tableView.tableFooterView = UIView()
         
         
@@ -57,20 +81,21 @@ class ChatListViewController: UITableViewController {
     @objc func tapOnLogout() {
         viewModel?.logout()
     }
-}
+} 
 
 extension ChatListViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return users.count
+        viewModel?.tapOnDialog(indexPath: indexPath)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
+    }
+    
+/*
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return dialogs.count //users.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -78,9 +103,9 @@ extension ChatListViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.selectionStyle = .none
         
-        cell.textLabel?.text = users[indexPath.row].username
+        cell.textLabel?.text = dialogs[indexPath.row].user.username
         
         return cell
-    }
+    }  */
 }
 

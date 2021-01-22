@@ -154,11 +154,14 @@ extension NewChatViewController: UITableViewDelegate, UITableViewDataSource {
         guard let service = viewModel?.service else { return }
         
         if searchIsActive {
-            viewModel?.router?.chatRoomViewController(user: filtredUsers[indexPath.row], service: service)
+            let dialog = Dialog(user: filtredUsers[indexPath.row])
+            viewModel?.router?.chatRoomViewController(dialog: dialog, service: service)
         } else {
-            viewModel?.router?.chatRoomViewController(user: users[indexPath.row], service: service)
+            let dialog = Dialog(user: users[indexPath.row])
+            viewModel?.router?.chatRoomViewController(dialog: dialog, service: service)
         }
-            
+        
+        
         self.dismiss(animated: false)
     }
     
