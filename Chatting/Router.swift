@@ -63,10 +63,6 @@ class Router: RouterProtocol {
         if let navigationController = navigationController {
             guard let chatRoomViewController = moduleBuilder?.createChatRoomModule(router: self, service: service) as? ChatRoomViewController else { return }
             
-//            if dialog.unreadMessages.value.count > 0 {
-//                dialog.messages =
-//            }
-            
             chatRoomViewController.viewModel?.dialog = dialog
             
             navigationController.pushViewController(chatRoomViewController, animated: true)
@@ -74,7 +70,7 @@ class Router: RouterProtocol {
             guard let vc = navigationController.viewControllers.first as? ChatListViewController else { return }
             var dialogs = vc.viewModel!.dialogs.value
          
-            if dialogs.filter { $0.user.username == dialog.user.username }.count == 0 {
+            if dialogs.filter({ $0.user.username == dialog.user.username }).count == 0 {
                 dialogs.append(dialog)
                 vc.viewModel?.dialogs.accept(dialogs)
             }

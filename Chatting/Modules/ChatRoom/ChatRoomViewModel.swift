@@ -14,9 +14,10 @@ protocol ChatRoomViewModelType {
     
     var dialog: Dialog? { get set }
     var service: ChattingServiceProtocol { get set }
-    var messages: [Message] { get set }
-    
-    func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType?
+   // var messages: [Message] { get set }
+    var bag: DisposeBag { get }
+   // var cellHeights: [IndexPath : CGFloat] { get set }
+    func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType
     func numberOfrows() -> Int
     func send(text: String)
 }
@@ -25,19 +26,22 @@ class ChatRoomViewModel: ChatRoomViewModelType {
     
     var router: RouterProtocol?
     var service: ChattingServiceProtocol
-    var messages = [Message]()
+   // var messages = [Message]()
+    var bag = DisposeBag()
     
     var dialog: Dialog?
     
     
-    func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType? {
+    func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType {
         
-        let message = dialog!.messages[indexPath.row]
+        var message = dialog!.unreadMessages.value[indexPath.row]
+        message.status = .read
+       
         return MessageCellViewModel(message: message)
     }
     
     func numberOfrows() -> Int {
-        return dialog?.messages.count ?? 0
+        return dialog?.unreadMessages.value.count ?? 0
     }
     
     func loadMaser() -> User? {
@@ -56,10 +60,12 @@ class ChatRoomViewModel: ChatRoomViewModelType {
         
         guard let reciever = dialog?.user, let sender = loadMaser() else { print("master"); return }
         
-        let message = Message(sender: sender, reciever: reciever, text: text, date: Date())
+        let message = Message(sender: sender, reciever: reciever, text: text, date: Date(), status: .read)
      
-        dialog?.messages.append(message)
-   
+        let messages = dialog!.unreadMessages.value + [message]
+        dialog?.unreadMessages.accept(messages)
+      
+        
         service.send(message, completion: { result in
             
         })
@@ -67,6 +73,12 @@ class ChatRoomViewModel: ChatRoomViewModelType {
     
     init(service: ChattingServiceProtocol) {
         self.service = service
-
+        
+//        service.inputMessages.subscribe(onNext: { [unowned self] message in
+//            guard var message = message.first, let dialog = self.dialog else { return }
+//
+//            let messages = dialog.unreadMessages.value + [message]
+//            self.dialog?.unreadMessages.accept(messages)
+//        }).disposed(by: bag)
     }
 }

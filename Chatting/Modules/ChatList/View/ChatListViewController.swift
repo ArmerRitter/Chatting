@@ -18,8 +18,7 @@ class ChatListViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      //  title = "Chats"
-   //     navigationController?.navigationBar.prefersLargeTitles = true
+        viewModel?.currentUser = nil
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -46,20 +45,15 @@ class ChatListViewController: UITableViewController {
         
         tableView.register(DialogTableViewCell.self, forCellReuseIdentifier: "dialogCellidentifyer")
         
-        viewModel?.dialogs.asObservable().bind(to: tableView.rx.items(cellIdentifier: "dialogCellidentifyer", cellType: DialogTableViewCell.self)) {
-            index, item, cell in
-            let viewModelCell = DialogTableViewCellViewModel(dialog: item)
-            cell.configure(viewModel: viewModelCell)
-//            item.unreadMessages.subscribe(onNext: { [unowned self] message in
-//                self.tableView.reloadData()
-//            }).disposed(by: viewModelCell.bag)
+        viewModel?.dialogs.asObservable().bind(to: tableView.rx.items(cellIdentifier: "dialogCellidentifyer", cellType: DialogTableViewCell.self)) { index, item, cell in
+            
+       //     DispatchQueue.main.async {
+                let viewModelCell = DialogTableViewCellViewModel(dialog: item)
+                cell.configure(viewModel: viewModelCell)
+        //    }
+
         }.disposed(by: viewModel!.bag)
         
-        
-        
-        
-        
-       // tableView.delegate = nil
         setupView()
     }
     
@@ -76,6 +70,7 @@ class ChatListViewController: UITableViewController {
 
     @objc func tapOnAdd() {
         viewModel?.tapOnAdd()
+       // tableView.reloadData()
     }
     
     @objc func tapOnLogout() {

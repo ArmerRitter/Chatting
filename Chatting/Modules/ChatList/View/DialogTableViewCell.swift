@@ -11,7 +11,6 @@ import RxSwift
 
 class DialogTableViewCell: UITableViewCell {
 
-   var bag = DisposeBag()
     
     let usernameLabel: UILabel = {
         let label = UILabel()
@@ -25,7 +24,7 @@ class DialogTableViewCell: UITableViewCell {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.backgroundColor = .systemBlue
         label.textColor = .white
-        label.text = "8"
+        //label.text = "8"
         label.textAlignment = .center
         label.layer.cornerRadius = 13
         label.clipsToBounds = true
@@ -36,15 +35,17 @@ class DialogTableViewCell: UITableViewCell {
         
         usernameLabel.text = viewModel.username
         
-        if viewModel.unreadMeassageCount == 0 {
-            unreadMessageLabel.isHidden = true
-        } else {
-            unreadMessageLabel.isHidden = false
-        }
+        viewModel.dialog.unreadMessageCounter.subscribe(onNext: { [unowned self] count in
+            self.unreadMessageLabel.text = "\(count)"
+           
+            if count == 0 {
+                self.unreadMessageLabel.isHidden = true
+            } else {
+                self.unreadMessageLabel.isHidden = false
+            }
+            
+        }).disposed(by: viewModel.bag)
         
-        viewModel.dialog.unreadMessages.subscribe(onNext: { [unowned self] messages in
-            self.unreadMessageLabel.text = "\(messages.count)"
-        }).disposed(by: bag)
     }
     
    

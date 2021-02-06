@@ -16,6 +16,7 @@ protocol ChatListViewModelType {
     var masterName: String? { get set }
     var masterUser: User { get set }
     var users: BehaviorRelay<[User]> { get }
+    var currentUser: User? { get set }
     var dialogs: BehaviorRelay<[Dialog]> { get set }
     var bag: DisposeBag { get }
     var service: ChattingService { get set }
@@ -44,6 +45,7 @@ class ChatListViewModel: ChatListViewModelType {
     var users = BehaviorRelay<[User]>(value: [])
     var bag = DisposeBag()
     var dialogs = BehaviorRelay<[Dialog]>(value: [])
+    var currentUser: User?
     
     var service = ChattingService()
     
@@ -67,7 +69,13 @@ class ChatListViewModel: ChatListViewModelType {
     }
     
     func tapOnDialog(indexPath: IndexPath) {
-        router?.chatRoomViewController(dialog: dialogs.value[indexPath.row], service: service)
+       // dialogs.value[indexPath.row].unreadMessageCounter.accept(0)
+        let dialog = dialogs.value[indexPath.row]
+        dialog.unreadMessageCounter.accept(0)
+        
+        currentUser = dialog.user
+        
+        router?.chatRoomViewController(dialog: dialog, service: service)
     }
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> DialogTableViewCellViewModelType? {
@@ -83,27 +91,30 @@ class ChatListViewModel: ChatListViewModelType {
         service.connect(user: masterUser)
         print(masterUser.username)
         
-//        users.subscribe(onNext: { [unowned self] users in
-//            guard let user = users.first else { return }
-//            let dialog = Dialog(user: user)
-//            self.dialogs.accept([dialog])
-//            print("userSub")
-//        }).disposed(by: bag)
-        
         service.inputMessages.subscribe(onNext: { [unowned self] message in
             guard let message = message.first else { return }
-            
+          //  print(Thread.current)
             let currentDialog = self.dialogs.value.filter { $0.user.username == message.sender.username }
+            
             if currentDialog.isEmpty {
                 let newDialog = Dialog(user: message.sender)
                 newDialog.unreadMessages.accept([message])
+                newDialog.unreadMessageCounter.accept(1)
                 
                 let dialogs = self.dialogs.value + [newDialog]
                 self.dialogs.accept(dialogs)
             } else {
+                
                 let messages = currentDialog[0].unreadMessages.value + [message]
-                currentDialog[0].unreadMessages.accept(messages)
-                print(currentDialog[0].unreadMessages.value.count)
+               currentDialog[0].unreadMessages.accept(messages)
+                print(currentDialog[0].unreadMessageCounter.value)
+                if self.currentUser?.username != message.sender.username {
+                
+                let unreadCounter = currentDialog[0].unreadMessageCounter.value + 1
+                currentDialog[0].unreadMessageCounter.accept(unreadCounter)
+                
+                    print(currentDialog[0].unreadMessageCounter.value)
+                }
             }
            
             }).disposed(by: bag)

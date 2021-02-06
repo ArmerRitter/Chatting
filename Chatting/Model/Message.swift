@@ -23,6 +23,11 @@ enum MessageContent {
     case message(Message)
 }
 
+enum MessageStatus: String, Codable {
+    case read
+    case unread
+}
+
 struct HandShake: Codable {
     let id: UUID
 }
@@ -32,6 +37,19 @@ struct Message: Codable {
     var reciever: User
     var text: String
     var date: Date
+    var status: MessageStatus
+}
+
+extension Message {
+    
+    func isInput() -> Bool {
+        
+        if  self.text == " " {
+            return true
+        }
+        return false
+    }
+    
 }
 
 extension MessageContent: Codable {

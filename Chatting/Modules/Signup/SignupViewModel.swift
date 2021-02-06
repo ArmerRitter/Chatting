@@ -17,13 +17,14 @@ class SignupViewModel: SignupViewModelType {
     
     var router: RouterProtocol?
     
+    
     func signup(username: String?, password: String?, confirmPassword: String?) {
         
         guard let username = username, let password = password, let confirmPassword = confirmPassword else {
             return
         }
         
-        RegistrationService().signup(username: username, password: password, confirmPassword: confirmPassword) { [weak self] result in
+        AuthenticationService().signup(username: username, password: password, confirmPassword: confirmPassword) { [weak self] result in
             switch result {
             case .success(let user):
                 DispatchQueue.main.async {

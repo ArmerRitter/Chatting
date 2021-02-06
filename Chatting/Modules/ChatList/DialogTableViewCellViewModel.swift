@@ -29,7 +29,7 @@ class DialogTableViewCellViewModel: DialogTableViewCellViewModelType {
     }
     
     var unreadMeassageCount: Int {
-        return dialog.unreadMessages.value.count
+        return dialog.unreadMessageCounter.value
     }
     
     init(dialog: Dialog) {

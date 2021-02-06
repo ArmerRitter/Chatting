@@ -11,7 +11,7 @@ import UIKit
 
 class MessageTextField: UITextField {
 
-    let padding = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+    let padding = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
 
     override open func textRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: padding)

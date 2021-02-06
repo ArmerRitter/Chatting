@@ -12,58 +12,77 @@ class LoginViewController: UIViewController {
 
     var viewModel: LoginViewModelType?
     
+    let keyboardManager = KeyboardManager()
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont(name: "MarkerFelt-Thin", size:  46)
-        label.text = "Chatik"
-        label.textColor = #colorLiteral(red: 0.4745098054, green: 0.8392156959, blue: 0.9764705896, alpha: 1)
+        label.font = UIFont(name: "TimesNewRomanPS-BoldMT", size:  39)
+        label.numberOfLines = 3
+        label.text = "Hello Again!\nWelcome\nback"
+        label.textColor = #colorLiteral(red: 0.05490196078, green: 0.2901960784, blue: 0.5254901961, alpha: 1)
         return label
     }()
     
-    let usernameTextField: UITextField = {
-       let textField = UITextField()
+    let usernameTextField: LoginTextField = {
+       let textField = LoginTextField()
        textField.translatesAutoresizingMaskIntoConstraints = false
-       textField.placeholder = " username"
+       textField.attributedPlaceholder = NSAttributedString(string: "Username", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
        textField.backgroundColor = .white
-       textField.layer.cornerRadius = 5
-       textField.layer.masksToBounds = true
-       textField.layer.borderColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
-       textField.layer.borderWidth = 1
+       textField.layer.cornerRadius = 10
+       textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+       textField.layer.shadowOpacity = 0.3
+       textField.layer.shadowOffset = CGSize(width: 0, height: 15)
+       textField.layer.shadowRadius = 15
        return textField
     }()
     
-    let passwordTextField: UITextField = {
-       let textField = UITextField()
+    let passwordTextField: LoginTextField = {
+       let textField = LoginTextField()
        textField.translatesAutoresizingMaskIntoConstraints = false
-       textField.placeholder = " password"
+       textField.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
        textField.backgroundColor = .white
-       textField.layer.cornerRadius = 5
-       textField.layer.masksToBounds = true
-       textField.layer.borderColor = #colorLiteral(red: 0.501960814, green: 0.501960814, blue: 0.501960814, alpha: 1)
-       textField.layer.borderWidth = 1
+       textField.layer.cornerRadius = 10
+       textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+       textField.layer.shadowOpacity = 0.3
+       textField.layer.shadowOffset = CGSize(width: 0, height: 15)
+       textField.layer.shadowRadius = 15
        return textField
     }()
     
     let loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        button.setTitle("Login", for: .normal)
+        button.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.2901960784, blue: 0.5254901961, alpha: 1)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 17)
+        button.setTitle("Log in", for: .normal)
         button.layer.cornerRadius = 10
-        button.layer.masksToBounds = true
+        button.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowOffset = CGSize(width: 0, height: 15)
+        button.layer.shadowRadius = 15
         return button
     }()
     
     let signupButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 15)
+        button.setTitleColor(.systemBlue, for: .normal)
         button.setTitle("Sign up", for: .normal)
-        button.layer.cornerRadius = 10
-        button.layer.masksToBounds = true
         return button
     }()
+    
+    let newAccountLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: 13)
+        label.text = "Don't have an account?"
+        label.textColor = #colorLiteral(red: 0.01568627451, green: 0.07450980392, blue: 0.2156862745, alpha: 1)
+        return label
+    }()
+    
+    var animatingConstraint: NSLayoutConstraint?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -90,9 +109,11 @@ class LoginViewController: UIViewController {
         view.addSubview(passwordTextField)
         view.addSubview(loginButton)
         view.addSubview(signupButton)
+        view.addSubview(newAccountLabel)
         
         usernameTextField.delegate = self
         passwordTextField.delegate = self
+        keyboardManager.delegate = self
         
         loginButton.addTarget(self, action: #selector(tapOnLogin), for: .touchUpInside)
         signupButton.addTarget(self, action: #selector(tapOnSignup), for: .touchUpInside)
@@ -109,41 +130,35 @@ class LoginViewController: UIViewController {
     }
     
     func setupConstraints() {
-        titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
+        
+        animatingConstraint = titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 100)
+        animatingConstraint?.isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: usernameTextField.leadingAnchor).isActive = true
         
         usernameTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 200).isActive = true
-        usernameTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        usernameTextField.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        usernameTextField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30).isActive = true
+        usernameTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 100).isActive = true
+        usernameTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         passwordTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        passwordTextField.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 20).isActive = true
-        passwordTextField.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        passwordTextField.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        passwordTextField.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 10).isActive = true
+        passwordTextField.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 100).isActive = true
+        passwordTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20).isActive = true
-        loginButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        loginButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        loginButton.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 100).isActive = true
+        loginButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
-        signupButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        signupButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10).isActive = true
-        signupButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-        signupButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        newAccountLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 20).isActive = true
+        newAccountLabel.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor).isActive = true
         
+        signupButton.centerYAnchor.constraint(equalTo: newAccountLabel.centerYAnchor).isActive = true
+        signupButton.leadingAnchor.constraint(equalTo: newAccountLabel.trailingAnchor, constant: 5).isActive = true
+        signupButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        signupButton.heightAnchor.constraint(equalToConstant: 17).isActive = true
         
     }
-    
-//
-//    init(viewModel: LoginViewModelType) {
-//        super.init(nibName: nil, bundle: nil)
-//        self.viewModel = viewModel
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
     
 }
 
@@ -154,4 +169,33 @@ extension LoginViewController: UITextFieldDelegate {
         return true
     }
     
+}
+
+extension LoginViewController: KeyboardManagerDelegate {
+   
+    
+    func keyboardDidAppear(keyboard frame: CGRect) {
+       
+        if frame.origin.y < 450 {
+            
+            let difference = 450 - frame.origin.y
+            animatingConstraint?.constant = 100 - difference
+
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.layoutIfNeeded()
+            })
+            
+        }
+    }
+    
+    func keyboardDidDiasappear(keyboard frame: CGRect) {
+        
+            animatingConstraint?.constant = 100
+
+            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+                self.view.layoutIfNeeded()
+            })
+    }
+    
+
 }

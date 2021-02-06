@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E250c" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DialogCoreData" representedClassName="DialogCoreData" syncable="YES">
+        <attribute name="masterUsername" optional="YES" attributeType="String"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MessageCoreData"/>
+        <relationship name="unreadMessages" toMany="YES" deletionRule="Nullify" destinationEntity="MessageCoreData"/>
+        <relationship name="user" maxCount="1" deletionRule="Nullify" destinationEntity="UserCoreData"/>
+    </entity>
+    <entity name="MessageCoreData" representedClassName="MessageCoreData" syncable="YES">
+        <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="text" attributeType="String"/>
+        <relationship name="reciever" maxCount="1" deletionRule="Nullify" destinationEntity="UserCoreData"/>
+        <relationship name="sender" maxCount="1" deletionRule="Nullify" destinationEntity="UserCoreData"/>
+    </entity>
+    <entity name="UserCoreData" representedClassName="UserCoreData" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="username" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="DialogCoreData" positionX="234.984375" positionY="-191.56640625" width="128" height="103"/>
+        <element name="MessageCoreData" positionX="435.41796875" positionY="-15.05078125" width="128" height="103"/>
+        <element name="UserCoreData" positionX="14.19140625" positionY="17.21875" width="128" height="73"/>
+    </elements>
+</model>
