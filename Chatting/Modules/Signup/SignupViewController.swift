@@ -11,7 +11,6 @@ import UIKit
 class SignupViewController: UIViewController {
 
     var viewModel: SignupViewModelType?
-    
     let keyboardManager = KeyboardManager()
     
     let titleLabel: UILabel = {
@@ -148,30 +147,39 @@ extension SignupViewController: UITextFieldDelegate {
 }
 
 extension SignupViewController: KeyboardManagerDelegate {
+    func keyboardWillChange(keyboard frame: CGRect) {
+        
+    }
     
-   func keyboardDidAppear(keyboard frame: CGRect) {
+    
+    
+    
+    func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
        
         if frame.origin.y < 455 {
             
             let difference = 455 - frame.origin.y
             animatingConstraint?.constant = 50 - difference
 
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
                 self.view.layoutIfNeeded()
             })
             
         }
     }
     
-    func keyboardDidDiasappear(keyboard frame: CGRect) {
+    func keyboardWillHide(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
         
             animatingConstraint?.constant = 50
 
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
                 self.view.layoutIfNeeded()
             })
     }
 
+    func keyboardDidHide(keyboard frame: CGRect) {
+        
+    }
     
 }
 

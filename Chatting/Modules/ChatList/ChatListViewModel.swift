@@ -93,10 +93,11 @@ class ChatListViewModel: ChatListViewModelType {
         
         service.inputMessages.subscribe(onNext: { [unowned self] message in
             guard let message = message.first else { return }
-          //  print(Thread.current)
+         
             let currentDialog = self.dialogs.value.filter { $0.user.username == message.sender.username }
             
             if currentDialog.isEmpty {
+                
                 let newDialog = Dialog(user: message.sender)
                 newDialog.unreadMessages.accept([message])
                 newDialog.unreadMessageCounter.accept(1)
@@ -106,12 +107,13 @@ class ChatListViewModel: ChatListViewModelType {
             } else {
                 
                 let messages = currentDialog[0].unreadMessages.value + [message]
-               currentDialog[0].unreadMessages.accept(messages)
+                currentDialog[0].unreadMessages.accept(messages)
                 print(currentDialog[0].unreadMessageCounter.value)
+                
                 if self.currentUser?.username != message.sender.username {
                 
-                let unreadCounter = currentDialog[0].unreadMessageCounter.value + 1
-                currentDialog[0].unreadMessageCounter.accept(unreadCounter)
+                    let unreadCounter = currentDialog[0].unreadMessageCounter.value + 1
+                    currentDialog[0].unreadMessageCounter.accept(unreadCounter)
                 
                     print(currentDialog[0].unreadMessageCounter.value)
                 }

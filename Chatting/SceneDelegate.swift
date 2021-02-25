@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                let win = UIWindow(windowScene: winScene)
               
               let navigationController = UINavigationController()
+              navigationController.navigationBar.tintColor = #colorLiteral(red: 0.05490196078, green: 0.2901960784, blue: 0.5254901961, alpha: 1)
         
               let moduleBuilder = ModuleBuilder()
               let router = Router(navigationController: navigationController, moduleBuilder: moduleBuilder)
@@ -37,13 +38,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                            router.chatListViewController(masterUser: user)
                           }
                       case .failure:
-                          print("failure")
+                          print("Login or password isn't correct")
                        DispatchQueue.main.async {
                            router.loginViewController()
                        }
                       }
                   }
-                   print("tok")
+                
                } else {
                    router.loginViewController()
                }

@@ -9,57 +9,40 @@
 import UIKit
 
 protocol KeyboardManagerDelegate: class {
- //   func thresholdHeight() -> CGFloat
-//    func constantOfAdjustedConstraint() -> CGFloat
-//    func adjustContentHeight(keyBoard isShown: Bool)
-    func keyboardDidAppear(keyboard frame: CGRect)
-    func keyboardDidDiasappear(keyboard frame: CGRect)
+    func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions)
+    func keyboardWillHide(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions)
 }
 
 class KeyboardManager {
     
-   // var height: CGFloat
-  //  var constraint: NSLayoutConstraint
-    var homeConstant: CGFloat = 0
-    var altConstant: CGFloat = 0
-    private var isShownKeyboard: Bool = false
-    private var keyboardFrame: CGRect = .zero
-    
     weak var delegate: KeyboardManagerDelegate?
+    var keyboardIsShown: Bool = false
     
     @objc func handleForKeyboard(_ notification: Notification) {
         
         guard let userInfo = notification.userInfo,
-              let keyboardInfo = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber,
               let delegate = delegate
         else { return }
         
-        keyboardFrame = keyboardInfo.cgRectValue
-        
-      //  var height = delegate.thresholdHeight()
-        var differenceHeight: CGFloat = 0
-        
-     //   guard height < keyboardFrame.origin.y else { return }
-        
-        isShownKeyboard = notification.name == UIResponder.keyboardWillShowNotification
-      //  print(keyboardFrame.origin.y)
-        if isShownKeyboard {
-            delegate.keyboardDidAppear(keyboard: keyboardFrame)
-        } else {
-            delegate.keyboardDidDiasappear(keyboard: keyboardFrame)
+
+        let options = UIView.AnimationOptions(rawValue: curve.uintValue)
+       
+        switch notification.name {
+        case UIResponder.keyboardWillShowNotification:
+            
+            delegate.keyboardWillShow(keyboard: endFrame.cgRectValue, duration: duration, options: options)
+            keyboardIsShown = true
+        case UIResponder.keyboardWillHideNotification:
+           
+            delegate.keyboardWillHide(keyboard: endFrame.cgRectValue, duration: duration, options: options)
+            keyboardIsShown = false
+        default:
+            return
         }
-        
     }
-    
-    func adjustContentHeight(current height: CGFloat) {
-        
-//         let messageBarHeight = -constraint!.constant + view.safeAreaInsets.bottom + 50
-//         let messagesContentHeight = view.frame.height - messageBarHeight
-//
-//         let diferenceContent = messageTableView.contentSize.height - messagesContentHeight
-//
-//        delegate?.adjustContentHeight(current: height)
-      }
     
     init() {
         

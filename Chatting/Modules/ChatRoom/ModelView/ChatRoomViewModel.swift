@@ -26,7 +26,6 @@ class ChatRoomViewModel: ChatRoomViewModelType {
     
     var router: RouterProtocol?
     var service: ChattingServiceProtocol
-   // var messages = [Message]()
     var bag = DisposeBag()
     
     var dialog: Dialog?
@@ -44,21 +43,9 @@ class ChatRoomViewModel: ChatRoomViewModelType {
         return dialog?.unreadMessages.value.count ?? 0
     }
     
-    func loadMaser() -> User? {
-        let defaults = UserDefaults.standard
-        
-        if let savedMasterUser = defaults.object(forKey: "MASTER_USER") as? Data {
-            let decoder = JSONDecoder()
-            if let loadedMasterUser = try? decoder.decode(User.self, from: savedMasterUser) {
-              return loadedMasterUser
-            }
-        }
-        return nil
-    }
-    
     func send(text: String) {
         
-        guard let reciever = dialog?.user, let sender = loadMaser() else { print("master"); return }
+        guard let reciever = dialog?.user, let sender = StorageManager.selfSender else { return }
         
         let message = Message(sender: sender, reciever: reciever, text: text, date: Date(), status: .read)
      
@@ -69,16 +56,10 @@ class ChatRoomViewModel: ChatRoomViewModelType {
         service.send(message, completion: { result in
             
         })
+        
     }
     
     init(service: ChattingServiceProtocol) {
         self.service = service
-        
-//        service.inputMessages.subscribe(onNext: { [unowned self] message in
-//            guard var message = message.first, let dialog = self.dialog else { return }
-//
-//            let messages = dialog.unreadMessages.value + [message]
-//            self.dialog?.unreadMessages.accept(messages)
-//        }).disposed(by: bag)
     }
 }

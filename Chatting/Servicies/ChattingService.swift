@@ -136,8 +136,7 @@ extension ChattingService: WebSocketDelegate {
             print("Received data: \(data.count)")
             do {
                 let message = try decoder.decode(MessageContent.self, from: data)
-            //  let ss = client.request.value(forHTTPHeaderField: "user")
-            //    print(Thread.current)
+            
                 switch message {
                 case .handshake(let hs):
                     shakes.append(hs)

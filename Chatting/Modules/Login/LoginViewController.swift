@@ -11,7 +11,6 @@ import UIKit
 class LoginViewController: UIViewController {
 
     var viewModel: LoginViewModelType?
-    
     let keyboardManager = KeyboardManager()
     
     let titleLabel: UILabel = {
@@ -172,27 +171,37 @@ extension LoginViewController: UITextFieldDelegate {
 }
 
 extension LoginViewController: KeyboardManagerDelegate {
+    func keyboardWillChange(keyboard frame: CGRect) {
+        
+    }
+    
+    
+    
+    func keyboardDidHide(keyboard frame: CGRect) {
+        
+    }
+    
    
     
-    func keyboardDidAppear(keyboard frame: CGRect) {
+    func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
        
         if frame.origin.y < 450 {
             
             let difference = 450 - frame.origin.y
             animatingConstraint?.constant = 100 - difference
 
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
                 self.view.layoutIfNeeded()
             })
             
         }
     }
     
-    func keyboardDidDiasappear(keyboard frame: CGRect) {
+    func keyboardWillHide(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
         
             animatingConstraint?.constant = 100
 
-            UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
                 self.view.layoutIfNeeded()
             })
     }

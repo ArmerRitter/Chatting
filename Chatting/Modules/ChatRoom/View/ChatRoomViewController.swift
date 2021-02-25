@@ -11,272 +11,241 @@ import RxSwift
 import RxRelay
 
 
-class ChatRoomViewController: UIViewController {
+class ChatRoomViewController: UIViewController, UIScrollViewDelegate {
     
     var viewModel: ChatRoomViewModelType?
-   
-    var messageTableView: UITableView = {
-        let table = UITableView()
+    let keyboardManager = KeyboardManager()
+    
+    private let dialogTableView: DialogTableView = {
+        let table = DialogTableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         return table
     }()
     
-    var messageTextField: MessageTextField = {
+    private let enterMessageTextField: MessageTextField = {
         let textfiled = MessageTextField()
         textfiled.translatesAutoresizingMaskIntoConstraints = false
         textfiled.layer.cornerRadius = 17
         textfiled.layer.masksToBounds = true
-        textfiled.layer.borderColor = UIColor.lightGray.cgColor
-        textfiled.layer.borderWidth = 1
         textfiled.placeholder = "Type message..."
         textfiled.backgroundColor = .white
+        textfiled.returnKeyType = .done
         return textfiled
     }()
     
-    var sendMessageButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 17
-        button.layer.masksToBounds = true
-        button.backgroundColor = .systemBlue
-        button.titleLabel?.font = .boldSystemFont(ofSize: 17)
-        button.setTitle("Send", for: .normal)
-        
-      //  button.setBackgroundImage(UIImage(systemName: "arrow.up.circle.fill"), for: .normal)
-      //  button.isEnabled = false
+    private let sendMessageButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "send.png"), for: .normal)
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 10)
         return button
     }()
     
-    var messageInputContainerView: UIView = {
+    private let enterMessageBackgroundView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
         return view
     }()
     
-    var bottomConstraint: NSLayoutConstraint?
-    var cellHeights = [IndexPath : CGFloat]()
+    private let dialogScrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        scroll.backgroundColor = .white
+        return scroll
+    }()
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        messageTableView.reloadData()
-        
-        if (viewModel?.dialog?.unreadMessages.value.count)! > 0 {
-        let indexPath = IndexPath(row: (viewModel?.dialog?.unreadMessages.value.count)! - 1, section: 0)
-        messageTableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
-        }
+    private var bottomConstraint: NSLayoutConstraint?
+    private var tableViewHeight: NSLayoutConstraint?
+    private var cellHeights = [IndexPath : CGFloat]()
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+            jumpToBottom()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-      // print("willLayout")
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-     //   tapOnBack()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        tableViewHeight?.constant = dialogTableView.contentSize.height
+        dialogScrollView.contentSize = CGSize(width: view.frame.width, height: tableViewHeight!.constant)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-      
-        view.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
-        
-//        viewModel?.dialog?.unreadMessages.subscribe(onNext: { [unowned self] message in
-//            self.messageTableView.reloadData()
-//        }).disposed(by: viewModel!.bag)
-        
-        messageTableView.register(MessageCell.self, forCellReuseIdentifier: "MessageCell")
-        
-        viewModel?.dialog?.unreadMessages.asObservable().bind(to: messageTableView.rx.items(cellIdentifier: "MessageCell", cellType: MessageCell.self)) { index, item, cell in
-            
-            let viewModelCell = MessageCellViewModel(message: item)
-            cell.configure(viewModel: viewModelCell)
-           
-        }.disposed(by: viewModel!.bag)
         
         setupView()
         setupConstraints()
+ 
+       viewModel?.dialog?.unreadMessages.asObservable().bind(to: dialogTableView.rx.items) { [unowned self] (tv, row, item) -> UITableViewCell in
+
+            if item.sender.username == StorageManager.selfSender?.username {
+                
+                let cell = tv.dequeueReusableCell(withIdentifier: "MessageOutputCell", for: IndexPath(row: row, section: 0)) as! MessageOutputCell
+                
+                let viewModelCell = MessageCellViewModel(message: item)
+                cell.configure(viewModel: viewModelCell)
+                
+                if self.dialogScrollView.contentSize.height > self.dialogScrollView.frame.height {
+                   self.jumpToBottom()
+                }
+                
+                return cell
+            } else {
+                
+                let cell = tv.dequeueReusableCell(withIdentifier: "MessageInputCell", for: IndexPath(row: row, section: 0)) as! MessageInputCell
+                
+                let viewModelCell = MessageCellViewModel(message: item)
+                cell.configure(viewModel: viewModelCell)
+                
+                if self.dialogScrollView.contentSize.height > self.dialogScrollView.frame.height {
+                   self.jumpToBottom()
+                }
+                
+                return cell
+            }
+          
+        }.disposed(by: viewModel!.bag)
+      
     }
     
     func setupView() {
-      //  navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Chats", style: .plain, target: self, action: #selector(tapOnBack))
-       
+      
+        view.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
+        navigationController?.navigationBar.isTranslucent = false
         title = viewModel?.dialog?.user.username
         
+        dialogTableView.register(MessageOutputCell.self, forCellReuseIdentifier: "MessageOutputCell")
+        dialogTableView.register(MessageInputCell.self, forCellReuseIdentifier: "MessageInputCell")
+        dialogTableView.tableFooterView = UIView()
+        dialogTableView.separatorStyle = .none
+        dialogTableView.isScrollEnabled = false
+        
+        enterMessageTextField.rightView = sendMessageButton
+        enterMessageTextField.rightViewMode = .always
+        
+        dialogTableView.delegate = self
+        dialogScrollView.delegate = self
+        enterMessageTextField.delegate = self
+        keyboardManager.delegate = self
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tapOnAdd))
-        navigationController?.navigationBar.isTranslucent = false
         
         sendMessageButton.addTarget(self, action: #selector(tapOnSend), for: .touchUpInside)
-        
-        messageTableView.tableFooterView = UIView()
-        messageTableView.delegate = self
-       // messageTableView.separatorStyle = .none
-   
+    }
+    
+    func setupConstraints() {
        
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentForKeyboard), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleContentForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
+       view.addSubview(dialogScrollView)
+       dialogScrollView.addSubview(dialogTableView)
+       view.addSubview(enterMessageBackgroundView)
+       enterMessageBackgroundView.addSubview(enterMessageTextField)
+       
+
+       enterMessageTextField.centerYAnchor.constraint(equalTo: enterMessageBackgroundView.centerYAnchor).isActive = true
+       enterMessageTextField.leadingAnchor.constraint(equalTo: enterMessageBackgroundView.leadingAnchor, constant: 15).isActive = true
+       enterMessageTextField.trailingAnchor.constraint(equalTo: enterMessageBackgroundView.trailingAnchor ,constant: -15).isActive = true
+       enterMessageTextField.heightAnchor.constraint(equalToConstant: 34).isActive = true
+  
+       dialogScrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+       dialogScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+       dialogScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+       dialogScrollView.bottomAnchor.constraint(equalTo: enterMessageBackgroundView.topAnchor).isActive = true
+       
+       bottomConstraint = enterMessageBackgroundView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+       bottomConstraint?.isActive = true
+       enterMessageBackgroundView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+       enterMessageBackgroundView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
+   
+       dialogTableView.topAnchor.constraint(equalTo: dialogScrollView.topAnchor).isActive = true
+       dialogTableView.leadingAnchor.constraint(equalTo: dialogScrollView.leadingAnchor).isActive = true
+       dialogTableView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
+       tableViewHeight = dialogTableView.heightAnchor.constraint(equalToConstant: 0)
+       tableViewHeight?.isActive = true
+    }
+    
+    
+    func jumpToBottom(){
+        DispatchQueue.main.async {
+         
+        }
+            let delta = self.dialogTableView.contentSize.height - self.dialogScrollView.frame.height
+            self.dialogScrollView.contentOffset.y = delta
+        //    print(self.dialogScrollView.frame.height, delta)
+    //    }
     }
     
     @objc func tapOnSend() {
         
-        guard let text = messageTextField.text else { return }
+        guard let text = enterMessageTextField.text else { return }
         
         if !text.isEmptyOrWhitespase() {
+            
             viewModel?.send(text: text)
-         //   messageTableView.reloadData()
-            messageTextField.text = nil
-            messageTextField.resignFirstResponder()
-            adjustContentHeight(animated: false)
-            print("send")
+            enterMessageTextField.text = nil
         }
-    }
-    
-    @objc func handleContentForKeyboard(_ notification: Notification) {
-        
-        guard let userInfo = notification.userInfo,
-              let keyboardInfo = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        else { return }
-        
-        let frameValue = keyboardInfo.cgRectValue
-        
-        let isShownKeyboard = notification.name == UIResponder.keyboardWillShowNotification
-        bottomConstraint?.constant = isShownKeyboard ? -frameValue.height + view.safeAreaInsets.bottom : 0
-       
-        adjustContentHeight(animated: isShownKeyboard)
-    }
-    
-    func adjustContentHeight(animated: Bool) {
-       let messageBarHeight = -bottomConstraint!.constant + view.safeAreaInsets.bottom + 50
-       let messagesContentHeight = view.frame.height - messageBarHeight
-
-       let diferenceContent = messageTableView.contentSize.height - messagesContentHeight
-  
-       UIView.animate(withDuration: 0, delay: 0, options: .curveEaseOut, animations: {
-           self.view.layoutIfNeeded()
-       }) { (completed) in
-           if diferenceContent > 0 {
-               let height = diferenceContent
-               self.messageTableView.setContentOffset(CGPoint(x: 0, y: height), animated: animated)
-            print("adjust")
-           }
-        self.messageTableView.reloadData()
-       }
-        
-    }
-    
-    func setupConstraints() {
-        view.addSubview(messageTableView)
-        view.addSubview(messageInputContainerView)
-        messageInputContainerView.addSubview(messageTextField)
-        messageInputContainerView.addSubview(sendMessageButton)
-        
-        
-        sendMessageButton.centerYAnchor.constraint(equalTo: messageInputContainerView.centerYAnchor).isActive = true
-        sendMessageButton.trailingAnchor.constraint(equalTo: messageInputContainerView.trailingAnchor,constant: -15).isActive = true
-        sendMessageButton.heightAnchor.constraint(equalToConstant: 34).isActive = true
-        sendMessageButton.widthAnchor.constraint(equalToConstant: 70).isActive = true
-     
-        messageTextField.centerYAnchor.constraint(equalTo: messageInputContainerView.centerYAnchor).isActive = true
-        messageTextField.leadingAnchor.constraint(equalTo: messageInputContainerView.leadingAnchor, constant: 15).isActive = true
-        messageTextField.trailingAnchor.constraint(equalTo: sendMessageButton.leadingAnchor,constant: -10).isActive = true
-        messageTextField.heightAnchor.constraint(equalToConstant: 34).isActive = true
-        
-        bottomConstraint = messageInputContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        bottomConstraint?.isActive = true
-        messageInputContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        messageInputContainerView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        messageInputContainerView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-        
-        messageTableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        messageTableView.widthAnchor.constraint(equalToConstant: view.frame.width).isActive = true
-        messageTableView.bottomAnchor.constraint(equalTo: messageInputContainerView.topAnchor).isActive = true
     }
     
     @objc func tapOnAdd() {
-     
-        messageTableView.reloadData()
-      
+       print(dialogTableView.contentSize.height)
+        jumpToBottom()
     }
-    
-    @objc func tapOnBack() {
-//        guard let chatListViewController = navigationController?.previosViewController as? ChatListViewController, let user = viewModel?.user else {
-//            print("back")
-//            return
-//        }
-        
-      //  chatListViewController.viewModel?.users.accept([user])
-        navigationController?.popViewController(animated: true)
-    }
-    
 }
 
 extension ChatRoomViewController: UITableViewDelegate {
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-      //  print(tableView.frame.height, view.frame.height)
-       
-    }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cellHeights[indexPath] = cell.frame.size.height
-        
-        guard let cell = cell as? MessageCell else { return }
-       
-        if cell.messageIsInput {
-            cell.messageTextView.roundCorner(corners: [.bottomRight, .topLeft, .topRight], radius: 20)
-            cell.messageTextView.backgroundColor = .systemGreen
-        } else {
-            cell.messageTextView.roundCorner(corners: [.bottomLeft, .topLeft, .topRight], radius: 20)
-            cell.messageTextView.backgroundColor = .blue
-        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        messageTextField.endEditing(true)
+        enterMessageTextField.endEditing(true)
     }
-    
-
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let text = viewModel?.dialog?.unreadMessages.value[indexPath.row].text else { return 0 }
-        return cellHeights[indexPath] ??  text.messageBounds().height + 40
+        return cellHeights[indexPath] ??  text.messageBounds().height + 25
     }
-   /*
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.numberOfrows() ?? 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = messageTableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as? MessageCell
-        
-        guard let tableViewCell = cell, let viewModel = viewModel else { return UITableViewCell() }
-        tableViewCell.selectionStyle = .none
-        
-        let cellViewModel = viewModel.cellViewModel(forIndexPath: indexPath)
-        tableViewCell.configure(viewModel: cellViewModel)
-
-        return tableViewCell
-    }
-    */
 }
 
 extension ChatRoomViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        messageTextField.resignFirstResponder()
-      //  adjustContentHeight(animated: false)
-        return true
+       enterMessageTextField.resignFirstResponder()
+       return true
+    }
+}
+
+extension ChatRoomViewController: KeyboardManagerDelegate {
+    
+    func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
+        
+        bottomConstraint?.constant =  -frame.height + view.safeAreaInsets.bottom
+
+        let keyboardHeight = frame.height
+        let shiftHeight = dialogScrollView.contentOffset.y + keyboardHeight - view.safeAreaInsets.bottom
+        
+        guard !keyboardManager.keyboardIsShown else { return }
+      
+        dialogScrollView.contentOffset.y = shiftHeight
+    
+        UIView.animate(withDuration: duration, delay: 0, options: options, animations: {
+            self.view.layoutIfNeeded()
+        })
+        
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        
-        
-        
+    func keyboardWillHide(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
+       
+        bottomConstraint?.constant = 0
+
+        let keyboardHeight = frame.height
+        let shiftHeight = dialogScrollView.contentOffset.y - keyboardHeight + view.safeAreaInsets.bottom
+
+        self.dialogScrollView.contentOffset.y = shiftHeight
+
+        UIView.animate(withDuration: duration, delay: 0.0, options: options, animations: {
+            self.view.layoutIfNeeded()
+        })
     }
-    
-    
     
 }

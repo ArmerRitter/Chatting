@@ -10,9 +10,9 @@ import UIKit
 
 protocol MessageCellViewModelType {
     var messageText: String { get }
-    var masterUser: User? { get }
     var messageSender: String { get }
     var messageSize: CGSize { get }
+    var messageTime: String { get }
 }
 
 
@@ -21,19 +21,7 @@ class MessageCellViewModel: MessageCellViewModelType {
     var message: Message
     
     var messageText: String {
-        return message.text
-    }
-    
-    var masterUser: User? {
-        let defaults = UserDefaults.standard
-        
-        if let savedMasterUser = defaults.object(forKey: "MASTER_USER") as? Data {
-            let decoder = JSONDecoder()
-            if let loadedMasterUser = try? decoder.decode(User.self, from: savedMasterUser) {
-              return loadedMasterUser
-            }
-        }
-        return nil
+        return message.text.trimmingCharacters(in: .whitespaces)
     }
     
     var messageSender: String {
@@ -41,9 +29,16 @@ class MessageCellViewModel: MessageCellViewModelType {
     }
     
     var messageSize: CGSize {
-        return message.text.messageBounds()
+        let text = message.text.trimmingCharacters(in: .whitespaces)
+        return text.messageBounds()
     }
     
+    var messageTime: String {
+        let dateFormater = DateFormatter()
+        dateFormater.dateFormat = "HH:mm"
+        
+        return dateFormater.string(from: message.date)
+    }
     
     init(message: Message) {
         self.message = message
