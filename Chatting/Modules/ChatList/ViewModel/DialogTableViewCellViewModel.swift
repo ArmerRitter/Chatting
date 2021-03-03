@@ -12,14 +12,11 @@ import RxSwift
 
 protocol DialogTableViewCellViewModelType {
     var username: String { get }
+    var lastMessage: String { get }
     var unreadMeassageCount: Int { get }
-    var dialog: Dialog { get set }
-    var bag: DisposeBag { get }
 }
 
 class DialogTableViewCellViewModel: DialogTableViewCellViewModelType {
-   // var unreadMeassageCount: Int
-    
     
     var dialog: Dialog
     var bag = DisposeBag()
@@ -32,9 +29,13 @@ class DialogTableViewCellViewModel: DialogTableViewCellViewModelType {
         return dialog.unreadMessageCounter.value
     }
     
+    var lastMessage: String {
+        guard let text = dialog.messages.value.last?.text else { return "" }
+        return text
+    }
+    
     init(dialog: Dialog) {
         self.dialog = dialog
-       // self.unreadMeassageCount = 0
     }    
     
 }

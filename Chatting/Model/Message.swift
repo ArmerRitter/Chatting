@@ -8,10 +8,6 @@
 
 import Foundation
 
-//enum MessageType: String, Codable {
-//    case handshake
-//    case message
-//}
 var shakes = [HandShake]()
 
 enum MessageError: Error {

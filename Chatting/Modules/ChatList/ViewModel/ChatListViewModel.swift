@@ -13,15 +13,15 @@ import Starscream
 
 protocol ChatListViewModelType {
     
-    var masterName: String? { get set }
-    var masterUser: User { get set }
-    var users: BehaviorRelay<[User]> { get }
-    var currentUser: User? { get set }
+  //  var masterName: String? { get set }
+  //  var masterUser: User { get set }
+  //  var users: BehaviorRelay<[User]> { get }
+    var currentDialogOfUser: User? { get set }
     var dialogs: BehaviorRelay<[Dialog]> { get set }
     var bag: DisposeBag { get }
     var service: ChattingService { get set }
     func logout()
-    func tapOnAdd()
+    func tapOnAddNewDialog()
     func tapOnDialog(indexPath: IndexPath) 
     func cellViewModel(forIndexPath indexPath: IndexPath) -> DialogTableViewCellViewModelType?
 }
@@ -30,50 +30,39 @@ protocol ChatListViewModelType {
 
 class ChatListViewModel: ChatListViewModelType {
     
-    var masterName: String? {
-        get {
-            return UserDefaults.standard.string(forKey: "MASTER_NAME")
-        }
-        set {
-            return UserDefaults.standard.set(newValue, forKey: "MASTER_NAME")
-        }
-    }
-    
-    var masterUser: User
+   // var masterUser: User
     
     var router: RouterProtocol?
-    var users = BehaviorRelay<[User]>(value: [])
+   // var users = BehaviorRelay<[User]>(value: [])
     var bag = DisposeBag()
     var dialogs = BehaviorRelay<[Dialog]>(value: [])
-    var currentUser: User?
+    var currentDialogOfUser: User?
     
     var service = ChattingService()
     
-    func saveUser(user: User) {
-        if let encoded =  try? JSONEncoder().encode(user) {
-            let defaults = UserDefaults.standard
-            defaults.set(encoded, forKey: "MASTER_USER")
-        }
-    }
+//    func saveUser(user: User) {
+//        if let encoded =  try? JSONEncoder().encode(user) {
+//            let defaults = UserDefaults.standard
+//            defaults.set(encoded, forKey: "MASTER_USER")
+//        }
+//    }
     
     func logout() {
         AuthenticationService().logout()
-        masterName = nil
-        UserDefaults.standard.set(nil, forKey: "MASTER_USER")
+        StorageManager.selfSender = nil
         router?.loginViewController()
     }
     
-    func tapOnAdd() {
-        router?.newChatViewController(service: service)
-        
+    func tapOnAddNewDialog() {
+        router?.newDialogViewController(service: service)
     }
     
     func tapOnDialog(indexPath: IndexPath) {
-       // dialogs.value[indexPath.row].unreadMessageCounter.accept(0)
+      
         let dialog = dialogs.value[indexPath.row]
         dialog.unreadMessageCounter.accept(0)
         
-        currentUser = dialog.user
+        currentDialogOfUser = dialog.user
         
         router?.chatRoomViewController(dialog: dialog, service: service)
     }
@@ -85,11 +74,12 @@ class ChatListViewModel: ChatListViewModelType {
     }
     
     init(masterUser: User) {
-        self.masterUser = masterUser
-        self.masterName = masterUser.username
-        self.saveUser(user: masterUser)
+     //   self.masterUser = masterUser
+    //    self.masterName = masterUser.username
+       // self.saveUser(user: masterUser)
+        StorageManager.selfSender = masterUser
         service.connect(user: masterUser)
-        print(masterUser.username)
+       
         
         service.inputMessages.subscribe(onNext: { [unowned self] message in
             guard let message = message.first else { return }
@@ -99,23 +89,23 @@ class ChatListViewModel: ChatListViewModelType {
             if currentDialog.isEmpty {
                 
                 let newDialog = Dialog(user: message.sender)
-                newDialog.unreadMessages.accept([message])
+                newDialog.messages.accept([message])
                 newDialog.unreadMessageCounter.accept(1)
                 
-                let dialogs = self.dialogs.value + [newDialog]
-                self.dialogs.accept(dialogs)
+                newDialog.messages.asObservable().subscribe(onNext: { [unowned self] message in
+                    let dialogs = self.dialogs.value.filter { $0.user.username != newDialog.user.username }
+                    self.dialogs.accept([newDialog] + dialogs)
+                }).disposed(by: self.bag)
+                
             } else {
                 
-                let messages = currentDialog[0].unreadMessages.value + [message]
-                currentDialog[0].unreadMessages.accept(messages)
-                print(currentDialog[0].unreadMessageCounter.value)
+                let messages = currentDialog[0].messages.value + [message]
+                currentDialog[0].messages.accept(messages)
                 
-                if self.currentUser?.username != message.sender.username {
+                if self.currentDialogOfUser?.username != message.sender.username {
                 
                     let unreadCounter = currentDialog[0].unreadMessageCounter.value + 1
                     currentDialog[0].unreadMessageCounter.accept(unreadCounter)
-                
-                    print(currentDialog[0].unreadMessageCounter.value)
                 }
             }
            

@@ -12,16 +12,16 @@ import RxRelay
 import RxCocoa
 
 
-class NewChatViewController: UIViewController {
+class NewDialogViewController: UIViewController {
     
-    var viewModel: NewChatViewModelType?
+    var viewModel: NewDialogViewModelType?
     var users = [User]()
     var filtredUsers = [User]()
     var searchIsActive = false
     
-    let searchController = UISearchController(searchResultsController: nil)
+    private let searchController = UISearchController(searchResultsController: nil)
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .boldSystemFont(ofSize: 17)
@@ -29,7 +29,7 @@ class NewChatViewController: UIViewController {
         return label
     }()
     
-    let searchBar: UISearchBar = {
+    private let userSearchBar: UISearchBar = {
         let bar = UISearchBar()
         bar.translatesAutoresizingMaskIntoConstraints = false
         bar.layer.borderWidth = 1
@@ -37,20 +37,10 @@ class NewChatViewController: UIViewController {
         return bar
     }()
     
-    let tableView: UITableView = {
+    private let usersTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
-    }()
-    
-    let loginButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        button.setTitle("Login", for: .normal)
-        button.layer.cornerRadius = 10
-        button.layer.masksToBounds = true
-        return button
     }()
     
    
@@ -58,68 +48,50 @@ class NewChatViewController: UIViewController {
         super.viewDidLoad()
         
        setupView()
+       setupConstraints()
         
        viewModel?.users.subscribe(onNext: { [unowned self] users in
             self.users = users
             DispatchQueue.main.async {
-                self.tableView.reloadData()
+                self.usersTableView.reloadData()
             }
        }).disposed(by: viewModel!.bag)
         
-        loginButton.addTarget(self, action: #selector(tapOnLogin), for: .touchUpInside)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-     
-    }
-    
-    @objc func tapOnLogin() {
-        
+       
     }
     
     func setupView() {
         
         view.backgroundColor = .white
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        tableView.tableFooterView = UIView()
-        tableView.delegate = self
-        tableView.dataSource = self
+        usersTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        usersTableView.tableFooterView = UIView()
+        usersTableView.delegate = self
+        usersTableView.dataSource = self
         
-        searchBar.delegate = self
-        
+        userSearchBar.delegate = self
+    }
+    
+    func setupConstraints() {
         view.addSubview(titleLabel)
-        view.addSubview(searchBar)
-        view.addSubview(tableView)
-//        searchController.searchBar.delegate = self
-//        searchController.searchResultsUpdater = self
-//        searchController.obscuresBackgroundDuringPresentation = false
-//
-//        navigationItem.searchController = searchController
-//        navigationItem.hidesSearchBarWhenScrolling = false
-        
-
-//        loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        loginButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-//        loginButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-//        loginButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        view.addSubview(userSearchBar)
+        view.addSubview(usersTableView)
         
         titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
         titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
-        searchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        searchBar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 5).isActive = true
-        searchBar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -5).isActive = true
+        userSearchBar.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+        userSearchBar.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 5).isActive = true
+        userSearchBar.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -5).isActive = true
         
-        tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        usersTableView.topAnchor.constraint(equalTo: userSearchBar.bottomAnchor).isActive = true
+        usersTableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        usersTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        usersTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
 }
 
-extension NewChatViewController: UISearchBarDelegate {
+extension NewDialogViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
@@ -129,7 +101,7 @@ extension NewChatViewController: UISearchBarDelegate {
         filtredUsers.removeAll()
         filtredUsers = users.filter { $0.username.contains(searchText) }
         
-        tableView.reloadData()
+        usersTableView.reloadData()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -137,7 +109,7 @@ extension NewChatViewController: UISearchBarDelegate {
         searchBar.showsCancelButton = false
         searchBar.text = nil
         searchIsActive = false
-        tableView.reloadData()
+        usersTableView.reloadData()
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -147,20 +119,17 @@ extension NewChatViewController: UISearchBarDelegate {
     
 }
 
-extension NewChatViewController: UITableViewDelegate, UITableViewDataSource {
+extension NewDialogViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        guard let service = viewModel?.service else { return }
-        
+                
         if searchIsActive {
             let dialog = Dialog(user: filtredUsers[indexPath.row])
-            viewModel?.router?.chatRoomViewController(dialog: dialog, service: service)
+            viewModel?.tapOnUser(with: dialog)
         } else {
             let dialog = Dialog(user: users[indexPath.row])
-            viewModel?.router?.chatRoomViewController(dialog: dialog, service: service)
+            viewModel?.tapOnUser(with: dialog)
         }
-        
         
         self.dismiss(animated: false)
     }

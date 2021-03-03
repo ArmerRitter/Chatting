@@ -14,10 +14,58 @@
             filePath = "Chatting/Extensions.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "lastLineInMessage(widthOfColumn:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Chatting/Router.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
+            landmarkName = "chatRoomViewController(dialog:service:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 81099f4fe13f04a1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Chatting.Router.chatRoomViewController(dialog: Chatting.Dialog, service: Chatting.ChattingServiceProtocol) -&gt; ()"
+                  moduleName = "Chatting"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imnotkidding/Documents/Projects/Chatting/Chatting/Router.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "70"
+                  endingLineNumber = "70"
+                  offsetFromSymbolStart = "2045">
+               </Location>
+               <Location
+                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 9cb6af5c0d9ee084"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Array&lt;Chatting.Message&gt;) -&gt; () in Chatting.Router.chatRoomViewController(dialog: Chatting.Dialog, service: Chatting.ChattingServiceProtocol) -&gt; ()"
+                  moduleName = "Chatting"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imnotkidding/Documents/Projects/Chatting/Chatting/Router.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "71"
+                  endingLineNumber = "71"
+                  offsetFromSymbolStart = "77">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

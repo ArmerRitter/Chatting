@@ -11,12 +11,8 @@ import RxRelay
 import RxSwift
 
 protocol ChatRoomViewModelType {
-    
     var dialog: Dialog? { get set }
-    var service: ChattingServiceProtocol { get set }
-   // var messages: [Message] { get set }
     var bag: DisposeBag { get }
-   // var cellHeights: [IndexPath : CGFloat] { get set }
     func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType
     func numberOfrows() -> Int
     func send(text: String)
@@ -33,14 +29,14 @@ class ChatRoomViewModel: ChatRoomViewModelType {
     
     func cellViewModel(forIndexPath indexPath: IndexPath) -> MessageCellViewModelType {
         
-        var message = dialog!.unreadMessages.value[indexPath.row]
+        var message = dialog!.messages.value[indexPath.row]
         message.status = .read
        
         return MessageCellViewModel(message: message)
     }
     
     func numberOfrows() -> Int {
-        return dialog?.unreadMessages.value.count ?? 0
+        return dialog?.messages.value.count ?? 0
     }
     
     func send(text: String) {
@@ -49,8 +45,8 @@ class ChatRoomViewModel: ChatRoomViewModelType {
         
         let message = Message(sender: sender, reciever: reciever, text: text, date: Date(), status: .read)
      
-        let messages = dialog!.unreadMessages.value + [message]
-        dialog?.unreadMessages.accept(messages)
+        let messages = dialog!.messages.value + [message]
+        dialog?.messages.accept(messages)
       
         
         service.send(message, completion: { result in

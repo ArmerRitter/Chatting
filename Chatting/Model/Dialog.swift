@@ -13,13 +13,11 @@ import RxRelay
 class Dialog: NSObject {
    
     var user: User
-    var messages: [Message]
-    var unreadMessages = BehaviorRelay<[Message]>(value: [])
+    var messages = BehaviorRelay<[Message]>(value: [])
     var unreadMessageCounter = BehaviorRelay<Int>(value: 0)
     
     init(user: User) {
         self.user = user
-        self.messages = []
     }
     
 }

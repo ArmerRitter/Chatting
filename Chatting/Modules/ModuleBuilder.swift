@@ -38,9 +38,9 @@ class ModuleBuilder {
         return view
     }
     
-    func createNewChatModule(router: RouterProtocol, service: ChattingServiceProtocol) -> UIViewController {
-        let view = NewChatViewController()
-        let viewModel = NewChatViewModel(service: service)
+    func createNewDialogModule(router: RouterProtocol, service: ChattingServiceProtocol) -> UIViewController {
+        let view = NewDialogViewController()
+        let viewModel = NewDialogViewModel(service: service)
         
         viewModel.router = router
         view.viewModel = viewModel

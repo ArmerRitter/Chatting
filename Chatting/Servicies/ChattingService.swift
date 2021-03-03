@@ -34,9 +34,6 @@ class ChattingService: ChattingServiceProtocol {
     
     func connect(user: User) {
       
-      //  let masterName = UserDefaults.standard.value(forKey: "MASTER_NAME") as! String
-     //   let code =  masterName < user.username ? masterName + user.username : user.username + masterName
-       
         request.setValue("\(user.username)", forHTTPHeaderField: "user")
         socket = WebSocket(request: request)
         
@@ -45,40 +42,11 @@ class ChattingService: ChattingServiceProtocol {
     }
     
     func disconnect() {
-        print("disc")
         self.socket.disconnect()
     }
     
     func send(_ message: Message, completion: @escaping (RequestResult<Bool>) -> Void) {
-//      do {
-//
-//        let path = "http://localhost:8080/api/messages"
-//        guard let url = URL(string: path) else {
-//          fatalError()
-//        }
-//
-//        var sendRequest = URLRequest(url: url)
-//
-//        sendRequest.httpBody = try JSONEncoder().encode(message)
-//        sendRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-//        sendRequest.httpMethod = "POST"
-//
-//        let dataTask = URLSession.shared.dataTask(with: sendRequest) { data, response, _ in
-//
-//            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-//                completion(.failure)
-//                return
-//            }
-//
-//            completion(.success(true))
-//        }
-//
-//        dataTask.resume()
-//
-//      } catch {
-//        completion(.failure)
-//      }
-//
+
         do {
             let messageData = try encoder.encode(message)
             socket.write(data: messageData, completion: nil)
@@ -170,36 +138,4 @@ extension ChattingService: WebSocketDelegate {
     
 }
 
-/*  func getAllUsersAPI() -> Observable<[User]> {
-    return Observable<[User]>.create { observer in
-       
-        let path = "http://localhost:8080/api/users"
-        guard let url = URL(string: path) else {
-          fatalError()
-        }
-       
-        let getAllRequest = URLRequest(url: url)
-        
-        let dataTask = URLSession.shared.dataTask(with: getAllRequest) { data, response, _ in
-            
-           guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200, let jsonData = data else {
-                return
-           }
-            
-           do {
-                let users = try JSONDecoder().decode([User].self, from: jsonData)
-                users.forEach { print($0.username) }
-                observer.onNext(users)
-           } catch let error {
-                observer.onError(error)
-                print("error")
-           }
-            observer.onCompleted()
-        }
-        dataTask.resume()
-        
-        return Disposables.create {
-           // dataTask.cancel()
-        }
-    }
-} */
+

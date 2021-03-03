@@ -13,7 +13,7 @@ import Foundation
 //    case success
 //    case failure
 //}
-
+/*
 class RegistrationService {
     
     static let defaultsKey = "USER_TOKEN"
@@ -78,3 +78,4 @@ class RegistrationService {
     }
     
 }
+*/

@@ -37,43 +37,43 @@ class SignupViewController: UIViewController {
     }()
     
     let passwordTextField: LoginTextField = {
-    let textField = LoginTextField()
-    textField.translatesAutoresizingMaskIntoConstraints = false
-    textField.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-    textField.backgroundColor = .white
-    textField.layer.cornerRadius = 10
-    textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
-    textField.layer.shadowOpacity = 0.3
-    textField.layer.shadowOffset = CGSize(width: 0, height: 15)
-    textField.layer.shadowRadius = 15
-    return textField
+        let textField = LoginTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.attributedPlaceholder = NSAttributedString(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+        textField.backgroundColor = .white
+        textField.layer.cornerRadius = 10
+        textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+        textField.layer.shadowOpacity = 0.3
+        textField.layer.shadowOffset = CGSize(width: 0, height: 15)
+        textField.layer.shadowRadius = 15
+        return textField
     }()
     
     let confirmPasswordTextField: LoginTextField = {
-    let textField = LoginTextField()
-    textField.translatesAutoresizingMaskIntoConstraints = false
-    textField.attributedPlaceholder = NSAttributedString(string: "Confirm password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-    textField.backgroundColor = .white
-    textField.layer.cornerRadius = 10
-    textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
-    textField.layer.shadowOpacity = 0.3
-    textField.layer.shadowOffset = CGSize(width: 0, height: 15)
-    textField.layer.shadowRadius = 15
-    return textField
+        let textField = LoginTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.attributedPlaceholder = NSAttributedString(string: "Confirm password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+        textField.backgroundColor = .white
+        textField.layer.cornerRadius = 10
+        textField.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+        textField.layer.shadowOpacity = 0.3
+        textField.layer.shadowOffset = CGSize(width: 0, height: 15)
+        textField.layer.shadowRadius = 15
+        return textField
     }()
     
     let signupButton: UIButton = {
-    let button = UIButton()
-    button.translatesAutoresizingMaskIntoConstraints = false
-    button.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.2901960784, blue: 0.5254901961, alpha: 1)
-    button.titleLabel?.font = .boldSystemFont(ofSize: 17)
-    button.setTitle("Sign up", for: .normal)
-    button.layer.cornerRadius = 10
-    button.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
-    button.layer.shadowOpacity = 0.3
-    button.layer.shadowOffset = CGSize(width: 0, height: 15)
-    button.layer.shadowRadius = 15
-    return button
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = #colorLiteral(red: 0.05490196078, green: 0.2901960784, blue: 0.5254901961, alpha: 1)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 17)
+        button.setTitle("Sign up", for: .normal)
+        button.layer.cornerRadius = 10
+        button.layer.shadowColor = #colorLiteral(red: 0.5490196078, green: 0.5490196078, blue: 0.5960784314, alpha: 1)
+        button.layer.shadowOpacity = 0.3
+        button.layer.shadowOffset = CGSize(width: 0, height: 15)
+        button.layer.shadowRadius = 15
+        return button
     }()
     
     var animatingConstraint: NSLayoutConstraint?

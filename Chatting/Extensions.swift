@@ -33,10 +33,6 @@ extension String {
        
         let boundingBoxWithTime = (self + "aaaa").boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17)], context: nil)
         
-//
-//        let lastLine = self.lastLineInMessage(widthOfColumn: boundingBox.width)
-//        print(lastLine)
-        
         if boundingBoxWithTime.height > boundingBox.height {
             dopHight = 15
         }
@@ -48,28 +44,28 @@ extension String {
         return CGSize(width: boundingBox.width + dopWidth, height: boundingBox.height + dopHight)
       }
     
-     fileprivate func lastLineInMessage(widthOfColumn width: CGFloat) -> String {
-        
-        let words = self.components(separatedBy: CharacterSet.whitespaces)
-        var line = ""
-        
-        for (i,word) in words.enumerated() {
-            
-            line += word
-            
-            
-            if line.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17)]).width > width {
-                line = word
-            }
-            
-            if words.count - 1 != i {
-                line += " "
-            }
-            print(line, line.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17)]).width)
-        }
-        
-        return line
-    }
+//     fileprivate func lastLineInMessage(widthOfColumn width: CGFloat) -> String {
+//
+//        let words = self.components(separatedBy: CharacterSet.whitespaces)
+//        var line = ""
+//
+//        for (i,word) in words.enumerated() {
+//
+//            line += word
+//
+//
+//            if line.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17)]).width > width {
+//                line = word
+//            }
+//
+//            if words.count - 1 != i {
+//                line += " "
+//            }
+//            print(line, line.size(withAttributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 17)]).width)
+//        }
+//
+//        return line
+//    }
     
     func isEmptyOrWhitespase() -> Bool {
         self.trimmingCharacters(in: .whitespaces) == ""

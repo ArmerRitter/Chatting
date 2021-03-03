@@ -9,16 +9,11 @@
 import UIKit
 
 
-enum Route {
-    case signIn
-    case chatList
-}
-
 protocol RouterProtocol {
     func loginViewController()
     func chatListViewController(masterUser: User)
     func signupViewController()
-    func newChatViewController(service: ChattingServiceProtocol)
+    func newDialogViewController(service: ChattingServiceProtocol)
     func chatRoomViewController(dialog: Dialog, service: ChattingServiceProtocol)
     var navigationController: UINavigationController? { get }
 }
@@ -52,10 +47,10 @@ class Router: RouterProtocol {
         }
     }
     
-    func newChatViewController(service: ChattingServiceProtocol) {
+    func newDialogViewController(service: ChattingServiceProtocol) {
         if let navigationController = navigationController {
-            guard let newChatViewController = moduleBuilder?.createNewChatModule(router: self, service: service) else { return }
-            navigationController.present(newChatViewController, animated: true)
+            guard let newDialogViewController = moduleBuilder?.createNewDialogModule(router: self, service: service) else { return }
+            navigationController.present(newDialogViewController, animated: true)
         }
     }
     
@@ -64,33 +59,22 @@ class Router: RouterProtocol {
             guard let chatRoomViewController = moduleBuilder?.createChatRoomModule(router: self, service: service) as? ChatRoomViewController else { return }
             
             chatRoomViewController.viewModel?.dialog = dialog
-            
             navigationController.pushViewController(chatRoomViewController, animated: true)
             
-            guard let vc = navigationController.viewControllers.first as? ChatListViewController else { return }
-            var dialogs = vc.viewModel!.dialogs.value
-         
-            if dialogs.filter({ $0.user.username == dialog.user.username }).count == 0 {
-                dialogs.append(dialog)
-                vc.viewModel?.dialogs.accept(dialogs)
+            guard let chatListViewController = navigationController.viewControllers.first as? ChatListViewController else { return }
+            
+            let dialogs = chatListViewController.viewModel!.dialogs.value
+            
+            if !dialogs.contains(dialog) {
+                
+                dialog.messages.asObservable().subscribe(onNext: { message in
+                    let anotherDialogs = dialogs.filter { $0.user.username != dialog.user.username }
+                    chatListViewController.viewModel!.dialogs.accept([dialog] + anotherDialogs)
+                }).disposed(by: chatListViewController.viewModel!.bag)
+               
             }
         }
         
-        
-    }
-    
-    func route(to routeID: Route) {
-        
-        
-        switch routeID {
-        case .chatList:
-            let chatListVC = UINavigationController(rootViewController: ChatListViewController())
-            chatListVC.modalPresentationStyle = .fullScreen
-            viewController?.present(chatListVC, animated: true)
-        case .signIn:
-            let signInVC = SignupViewController()
-            viewController?.present(signInVC, animated: true)
-        }
         
     }
     

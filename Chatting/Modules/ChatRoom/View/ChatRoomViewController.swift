@@ -76,7 +76,7 @@ class ChatRoomViewController: UIViewController, UIScrollViewDelegate {
         setupView()
         setupConstraints()
  
-       viewModel?.dialog?.unreadMessages.asObservable().bind(to: dialogTableView.rx.items) { [unowned self] (tv, row, item) -> UITableViewCell in
+       viewModel?.dialog?.messages.asObservable().bind(to: dialogTableView.rx.items) { [unowned self] (tv, row, item) -> UITableViewCell in
 
             if item.sender.username == StorageManager.selfSender?.username {
                 
@@ -128,8 +128,6 @@ class ChatRoomViewController: UIViewController, UIScrollViewDelegate {
         enterMessageTextField.delegate = self
         keyboardManager.delegate = self
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tapOnAdd))
-        
         sendMessageButton.addTarget(self, action: #selector(tapOnSend), for: .touchUpInside)
     }
     
@@ -165,13 +163,8 @@ class ChatRoomViewController: UIViewController, UIScrollViewDelegate {
     
     
     func jumpToBottom(){
-        DispatchQueue.main.async {
-         
-        }
-            let delta = self.dialogTableView.contentSize.height - self.dialogScrollView.frame.height
-            self.dialogScrollView.contentOffset.y = delta
-        //    print(self.dialogScrollView.frame.height, delta)
-    //    }
+        let delta = self.dialogTableView.contentSize.height - self.dialogScrollView.frame.height
+        self.dialogScrollView.contentOffset.y = delta
     }
     
     @objc func tapOnSend() {
@@ -185,10 +178,6 @@ class ChatRoomViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    @objc func tapOnAdd() {
-       print(dialogTableView.contentSize.height)
-        jumpToBottom()
-    }
 }
 
 extension ChatRoomViewController: UITableViewDelegate {
@@ -202,7 +191,7 @@ extension ChatRoomViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let text = viewModel?.dialog?.unreadMessages.value[indexPath.row].text else { return 0 }
+        guard let text = viewModel?.dialog?.messages.value[indexPath.row].text else { return 0 }
         return cellHeights[indexPath] ??  text.messageBounds().height + 25
     }
 }

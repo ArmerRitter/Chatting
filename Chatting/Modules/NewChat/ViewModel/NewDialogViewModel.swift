@@ -10,36 +10,34 @@ import Foundation
 import RxSwift
 import RxRelay
 
-protocol NewChatViewModelType {
-    var router: RouterProtocol? { get }
-    var service: ChattingServiceProtocol { get set }
+protocol NewDialogViewModelType {
     var users: BehaviorRelay<[User]> { get }
     var bag: DisposeBag { get }
-    func numberOfCount() -> Int
+    func tapOnUser(with dialog: Dialog)
 }
 
 
-class NewChatViewModel: NewChatViewModelType {
+class NewDialogViewModel: NewDialogViewModelType {
     
     var router: RouterProtocol?
     var service: ChattingServiceProtocol
+    
     var users = BehaviorRelay<[User]>(value: [])
     var bag = DisposeBag()
     
-    func numberOfCount() -> Int {
-        return 3
+    func tapOnUser(with dialog: Dialog) {
+        router?.chatRoomViewController(dialog: dialog, service: service)
     }
     
     func getAllUsers() {
         
-     //   guard let service = service else { return }
-        
         service.getAllUsers { [weak self] result in
             switch result {
             case .success(let users):
+                let selfUser = StorageManager.selfSender
                 let sortedUsers = users.sorted { $0.username < $1.username }
+                                       .filter { $0.username != selfUser?.username }
                 self?.users.accept(sortedUsers)
-         //      users.forEach { print($0.username) }
             case .failure:
                 print("failure")
             }
