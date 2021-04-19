@@ -12,10 +12,6 @@ import RxRelay
 import Starscream
 
 protocol ChatListViewModelType {
-    
-  //  var masterName: String? { get set }
-  //  var masterUser: User { get set }
-  //  var users: BehaviorRelay<[User]> { get }
     var currentDialogOfUser: User? { get set }
     var dialogs: BehaviorRelay<[Dialog]> { get set }
     var bag: DisposeBag { get }
@@ -30,22 +26,12 @@ protocol ChatListViewModelType {
 
 class ChatListViewModel: ChatListViewModelType {
     
-   // var masterUser: User
-    
     var router: RouterProtocol?
-   // var users = BehaviorRelay<[User]>(value: [])
     var bag = DisposeBag()
     var dialogs = BehaviorRelay<[Dialog]>(value: [])
     var currentDialogOfUser: User?
     
     var service = ChattingService()
-    
-//    func saveUser(user: User) {
-//        if let encoded =  try? JSONEncoder().encode(user) {
-//            let defaults = UserDefaults.standard
-//            defaults.set(encoded, forKey: "MASTER_USER")
-//        }
-//    }
     
     func logout() {
         AuthenticationService().logout()
@@ -74,9 +60,6 @@ class ChatListViewModel: ChatListViewModelType {
     }
     
     init(masterUser: User) {
-     //   self.masterUser = masterUser
-    //    self.masterName = masterUser.username
-       // self.saveUser(user: masterUser)
         StorageManager.selfSender = masterUser
         service.connect(user: masterUser)
        

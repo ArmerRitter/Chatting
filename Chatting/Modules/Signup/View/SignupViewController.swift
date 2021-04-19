@@ -147,12 +147,7 @@ extension SignupViewController: UITextFieldDelegate {
 }
 
 extension SignupViewController: KeyboardManagerDelegate {
-    func keyboardWillChange(keyboard frame: CGRect) {
-        
-    }
-    
-    
-    
+   
     
     func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
        

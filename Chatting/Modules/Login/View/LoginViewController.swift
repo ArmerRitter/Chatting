@@ -171,17 +171,6 @@ extension LoginViewController: UITextFieldDelegate {
 }
 
 extension LoginViewController: KeyboardManagerDelegate {
-    func keyboardWillChange(keyboard frame: CGRect) {
-        
-    }
-    
-    
-    
-    func keyboardDidHide(keyboard frame: CGRect) {
-        
-    }
-    
-   
     
     func keyboardWillShow(keyboard frame: CGRect, duration: Double, options: UIView.AnimationOptions) {
        

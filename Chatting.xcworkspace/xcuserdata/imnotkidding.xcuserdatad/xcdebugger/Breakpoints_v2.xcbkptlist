@@ -7,22 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FA2AB3D6-C9D9-4CC5-8482-F6DCD981713B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Chatting/Extensions.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
-            landmarkName = "lastLineInMessage(widthOfColumn:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -36,7 +20,7 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 81099f4fe13f04a1"
+                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 15d740aa0246849f"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -51,7 +35,7 @@
                   offsetFromSymbolStart = "2045">
                </Location>
                <Location
-                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 9cb6af5c0d9ee084"
+                  uuid = "3C1F29D6-87A8-4631-9A25-3A745759638E - 86870b9eee760db"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"

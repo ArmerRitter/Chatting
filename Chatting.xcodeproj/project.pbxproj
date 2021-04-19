@@ -28,7 +28,6 @@
 		B08D9815258F947F00A608D0 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9814258F947F00A608D0 /* Router.swift */; };
 		B08D9817258F94F800A608D0 /* AuthenticationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9816258F94F800A608D0 /* AuthenticationService.swift */; };
 		B08D9819258F951C00A608D0 /* ChattingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9818258F951C00A608D0 /* ChattingService.swift */; };
-		B08D981B258F954600A608D0 /* RegistrationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D981A258F954600A608D0 /* RegistrationService.swift */; };
 		B08D981D258F956700A608D0 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D981C258F956700A608D0 /* StorageService.swift */; };
 		B08D9820258F95A200A608D0 /* SignupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D981F258F95A200A608D0 /* SignupViewController.swift */; };
 		B08D9822258F95C400A608D0 /* SignupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B08D9821258F95C400A608D0 /* SignupViewModel.swift */; };
@@ -72,7 +71,6 @@
 		B08D9814258F947F00A608D0 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		B08D9816258F94F800A608D0 /* AuthenticationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationService.swift; sourceTree = "<group>"; };
 		B08D9818258F951C00A608D0 /* ChattingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChattingService.swift; sourceTree = "<group>"; };
-		B08D981A258F954600A608D0 /* RegistrationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationService.swift; sourceTree = "<group>"; };
 		B08D981C258F956700A608D0 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		B08D981F258F95A200A608D0 /* SignupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewController.swift; sourceTree = "<group>"; };
 		B08D9821258F95C400A608D0 /* SignupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignupViewModel.swift; sourceTree = "<group>"; };
@@ -200,7 +198,6 @@
 				B08D9816258F94F800A608D0 /* AuthenticationService.swift */,
 				B082256B25CB298F00A1864A /* KeyboardManager.swift */,
 				B08D9818258F951C00A608D0 /* ChattingService.swift */,
-				B08D981A258F954600A608D0 /* RegistrationService.swift */,
 				B08D981C258F956700A608D0 /* StorageService.swift */,
 			);
 			path = Servicies;
@@ -448,7 +445,6 @@
 				B08D982B258F966100A608D0 /* ChatListViewModel.swift in Sources */,
 				B0EBCE2A25C95C8100FC96FC /* LoginTextField.swift in Sources */,
 				B06FE72C25D47B6B00415A48 /* MessageInputCell.swift in Sources */,
-				B08D981B258F954600A608D0 /* RegistrationService.swift in Sources */,
 				B08D9813258F945800A608D0 /* ModuleBuilder.swift in Sources */,
 				B08D9822258F95C400A608D0 /* SignupViewModel.swift in Sources */,
 				B08D9815258F947F00A608D0 /* Router.swift in Sources */,

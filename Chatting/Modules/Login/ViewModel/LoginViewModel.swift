@@ -49,7 +49,7 @@ class LoginViewModel: LoginViewModelType {
 
             }
         }
-  //  router?.chatListViewController(masterUser: "Orr")
+  
     }
     
 }
