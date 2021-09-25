@@ -45,7 +45,7 @@ class LoginViewModel: LoginViewModelType {
                     self?.router?.chatListViewController(masterUser: user)
                 }
             case .failure:
-                print("failure")
+                print("failure login")
 
             }
         }
